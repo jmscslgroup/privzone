@@ -1,0 +1,10 @@
+Map Changes:
+    ☐ Make map fullscreen
+        * https://github.com/openlayers/openlayers/blob/main/examples/mobile-full-screen.html
+        * https://github.com/openlayers/openlayers/blob/main/examples/mobile-full-screen.js
+    ☐ Make map with sidepanel
+        * https://github.com/openlayers/openlayers/blob/main/examples/full-screen-source.html
+        * https://github.com/openlayers/openlayers/blob/main/examples/full-screen-source.js
+
+Button Changes:
+    ☐ Make send button unclickable until VIN and at least one privacy region
