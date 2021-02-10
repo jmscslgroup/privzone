@@ -6,5 +6,8 @@ Map Changes:
         * https://github.com/openlayers/openlayers/blob/main/examples/full-screen-source.html
         * https://github.com/openlayers/openlayers/blob/main/examples/full-screen-source.js
 
+Coordinates:
+    ☐ Change coordinates of polygons and circles from EPSG:3857 to EPSG:4326
+
 Button Changes:
     ☐ Make send button unclickable until VIN and at least one privacy region
