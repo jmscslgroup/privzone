@@ -1,0 +1,8 @@
+Map changes:
+    - Make map fullscreen with sider bar (DONE)
+    - Enable searching location by ZIP code
+    - Allow users to move existing regions
+    - Formatted
+Button changes:
+    - Make send button unclickable until VIN and at least one privacy region are in
+    - Make send button work

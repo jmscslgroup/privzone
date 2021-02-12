@@ -28,3 +28,28 @@ select[id=type] {
 select[id=type]:hover {
     background: #9bb2f1d7;
 }
+
+.map {
+    width: 100%;
+    height: 1000px;
+    float: left;
+}
+
+.sidebar {
+    height: 100%;
+    width: 210px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #dae7ea;
+    overflow-x: hidden;
+    padding: 20px;
+    float: right;
+    border: solid 5px #80afb8;
+  }
+
+  .form_section {
+      margin-top: 10px;
+      font-weight: bold;
+  }
