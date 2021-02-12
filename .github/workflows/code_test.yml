@@ -1,6 +1,22 @@
 name: Code Test
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - '**.py'
+      - '**.js'
+      - '**.html'
+      - '**.json'
+      - '**.css'
+      - '.github/workflows/code_test.yml'
+  pull_request:
+    paths:
+      - '**.py'
+      - '**.js'
+      - '**.html'
+      - '**.json'
+      - '**.css'
+      - '.github/workflows/code_test.yml'
 
 jobs:
   python:
