@@ -3,6 +3,7 @@ from api.models import Entry
 
 # dummy test
 
+
 class Test_Entry(TestCase):
     def setUp(self):
         Entry.objects.create(vin="thisisvin", data="data this is some coordinate")
