@@ -1,16 +1,6 @@
 name: Code Test
 
-on:
-  push:
-    paths:
-      - 'poisoning/**'
-      - 'tests/**'
-      - '.github/workflows/code_test.yml'
-  pull_request:
-    paths:
-      - 'poisoning/**'
-      - 'tests/**'
-      - '.github/workflows/code_test.yml'
+on: [push, pull_request]
 
 jobs:
   python:
