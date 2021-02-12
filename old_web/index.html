@@ -6,29 +6,34 @@
     <title>privzone</title>
     <!-- Pointer events polyfill for old browsers, see https://caniuse.com/#feat=pointer -->
     <script src="js/elem-pep.js"></script>
-    <style>
-      .map {
-        width: 100%;
-        height:600pt;
-      }
-    </style>
   </head>
+
   <body>
-    <div id="map" class="map"></div>
-    <form id="type_form"> 
-      <select id="type"> <!-- Select either circle or polygon shape -->
-        <option value="Circle">Circle</option>
-        <option value="Polygon">Polygon</option>
-      </select>
-      <input type="button" value="Reset" id="reset_btn"> <!-- Reset everything -->
-    </form>
-    <form id="id_form">
-      <input type="id_input" placeholder="Enter ID" id="id_input"> <!-- Where to type ID -->
-      <input type="button" value="Apply" id="apply_btn"> <!-- Button to apply current id -->
-    </form>
-    <input type="button" value="Send" id="send_btn"> <!-- Currently not doing anything -->
-    <p id="id-text-box"></p> <!-- Text for ID -->
-    <p id="coord-text-box"></p> <!-- Text for coordinates -->
+    <!-- Containter for map and interactive bar -->
+    <div class="container">
+      <!-- Map -->
+      <div id="map" class="map"></div>
+      <!-- Interactive side bar -->
+      <div class="sidebar">
+        <form id="type_form"> 
+          <select id="type" class="form_section"> <!-- Select either circle or polygon shape -->
+            <option value="Circle">Circle</option>
+            <option value="Polygon">Polygon</option>
+          </select>
+          <input type="button" value="Reset" id="reset_btn" class="form_section"> <!-- Reset everything -->
+        </form>
+        <form id="id_form">
+          <input type="id_input" placeholder="Enter ID" id="id_input" class="form_section"> <!-- Where to type ID -->
+          <input type="button" value="Apply" id="apply_btn" class="form_section"> <!-- Button to apply current id -->
+          <input type="button" value="Send" id="send_btn" class="form_section"> <!-- Currently not doing anything -->
+        </form>
+        <!-- Display user input -->
+        <p id="id-text-box"></p> <!-- Text for ID -->
+        <p id="coord-text-box"></p> <!-- Text for coordinates -->
+      </div>
+    </div>
+    <!-- Link to script -->
     <script src="js/main.js"></script>
+  <!-- End of body -->
   </body>
 </html>
