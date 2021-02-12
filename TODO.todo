@@ -1,13 +1,12 @@
-Map Changes:
-    ☐ Make map fullscreen
-        * https://github.com/openlayers/openlayers/blob/main/examples/mobile-full-screen.html
-        * https://github.com/openlayers/openlayers/blob/main/examples/mobile-full-screen.js
-    ☐ Make map with sidepanel
-        * https://github.com/openlayers/openlayers/blob/main/examples/full-screen-source.html
-        * https://github.com/openlayers/openlayers/blob/main/examples/full-screen-source.js
+Backend:
+    ☐ Set up database for user entries of vin and coordinates
+    ☐ Represent database entries as json data to be later sent to a location for processing
 
-Coordinates:
-    ☐ Change coordinates of polygons and circles from EPSG:3857 to EPSG:4326
+Frontend:
+    ☐ Move static frontend to new frontend that works with react
 
-Button Changes:
+Static Frontend:
+    ✔ Make map fullscreen @done(21-02-12 11:04)
+    ✔ Make map with sidepanel @done(21-02-12 11:06)
+    ✔ Change coordinates of polygons and circles from EPSG:3857 to EPSG:4326 @done(21-02-12 11:06)
     ☐ Make send button unclickable until VIN and at least one privacy region
