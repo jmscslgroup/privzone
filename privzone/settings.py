@@ -26,7 +26,9 @@ if os.path.isfile(dotenv_file):
     key_get = os.environ["SECRET_KEY"]
 else:
     if DEBUG:
-        print("Could not locate SECRET_KEY due to missing .env. Using a fake key because of DEBUG.")
+        print(
+            "Could not locate SECRET_KEY due to missing .env. Using a fake key because of DEBUG."
+        )
         key_get = "FAKE_KEY"
     else:
         key_get = None
