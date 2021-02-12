@@ -260,3 +260,6 @@ dmypy.json
 # Ignore all local history of files
 .history
 pyvenv.cfg
+
+# dont ignore .github
+!.github
