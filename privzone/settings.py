@@ -14,21 +14,28 @@ from pathlib import Path
 import os
 import dotenv
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
+    key_get = os.environ["SECRET_KEY"]
+else:
+    if DEBUG:
+        print("Could not locate SECRET_KEY due to missing .env. Using a fake key because of DEBUG.")
+        key_get = "FAKE_KEY"
+    else:
+        key_get = None
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ["SECRET_KEY"]
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = key_get
 
 ALLOWED_HOSTS = []
 
