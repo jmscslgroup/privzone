@@ -47,9 +47,9 @@ select[id=type]:hover {
     padding: 20px;
     float: right;
     border: solid 5px #80afb8;
-  }
+}
 
-  .form_section {
-      margin-top: 10px;
-      font-weight: bold;
-  }
+.form_section {
+    margin-top: 10px;
+    font-weight: bold;
+}
