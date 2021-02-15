@@ -1,0 +1,75 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#main {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+}
+
+input[type=button] {
+    border: 1px solid #9bb2f1d7;
+    color: #fff;
+    background: rgb(127, 174, 185);
+    padding: 10px 20px;
+    border-radius: 3px;
+    margin: 2px;
+}
+input[type=button]:hover {
+    background: #9bb2f1d7;
+}
+input[type=id_input] {
+    border: 1px solid #9bb2f1d7;
+    color: black;
+    background: rgb(255, 255, 255);
+    padding: 10px 20px;
+    border-radius: 3px;
+}
+input[type=id_input]:hover {
+    background: #9bb2f1d7;
+}
+select[id=type] {
+    border: 1px solid #9bb2f1d7;
+    color: black;
+    background: rgb(255, 255, 255);
+    padding: 10px 20px;
+    border-radius: 3px;
+}
+select[id=type]:hover {
+    background: #9bb2f1d7;
+}
+
+.map {
+    width: 100%;
+    height: 1000px;
+    float: left;
+}
+
+.sidebar {
+    height: 100%;
+    width: 210px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #dae7ea;
+    overflow-x: hidden;
+    padding: 20px;
+    float: right;
+    border: solid 5px #80afb8;
+}
+
+.form_section {
+    margin-top: 10px;
+    font-weight: bold;
+}
