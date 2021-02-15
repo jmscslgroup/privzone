@@ -1,12 +1,18 @@
 Backend:
     ☐ Set up database for user entries of vin and coordinates
     ☐ Represent database entries as json data to be later sent to a location for processing
+    ☐ Set up endpoint for send requests
+    ☐ Sign in, authentication
+    ☐ Users to vin mapping
+    ☐ Admin page
 
 Frontend:
-    ☐ Move static frontend to new frontend that works with react
+    ☐ Make send button unclickable until VIN and at least one privacy region
+    ☐ Remove apply button and have just send button
+    ☐ Make map and side container the same height if possible [the border on the side bar isn't shown on the bottom :(]
 
 Static Frontend:
-    ✔ Make map fullscreen @done(21-02-12 11:04)
-    ✔ Make map with sidepanel @done(21-02-12 11:06)
-    ✔ Change coordinates of polygons and circles from EPSG:3857 to EPSG:4326 @done(21-02-12 11:06)
-    ☐ Make send button unclickable until VIN and at least one privacy region
+    ✔ Make map fullscreen @done(21-02-12)
+    ✔ Make map with sidepanel @done(21-02-12)
+    ✔ Change coordinates of polygons and circles from EPSG:3857 to EPSG:4326 @done(21-02-12)
+    ✔ Move to new frontend that works with react @done(21-02-15)
