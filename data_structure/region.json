@@ -1,0 +1,5 @@
+{
+    "type": "circle/polygon",
+    "data": ["center", "radius"],
+    "data": ["coordinate", "coordinate", "coordinate", "coordinate"]
+}

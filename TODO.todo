@@ -1,15 +1,10 @@
 Backend:
-    ☐ Set up database for user entries of vin and coordinates
-    ☐ Represent database entries as json data to be later sent to a location for processing
-    ☐ Set up endpoint for send requests
-    ☐ Sign in, authentication
-    ☐ Users to vin mapping
-    ☐ Admin page
+    ☐ Set up endpoint for json post requests with data.
+    ☐ Send email with data.
 
 Frontend:
+    ☐ Turn regions into json format specified in data_structure, and have a sendable message on click send.
     ☐ Make send button unclickable until VIN and at least one privacy region
-    ☐ Remove apply button and have just send button
-    ☐ Make map and side container the same height if possible [the border on the side bar isn't shown on the bottom :(]
 
 Static Frontend:
     ✔ Make map fullscreen @done(21-02-12)
