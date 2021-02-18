@@ -56,14 +56,14 @@ select[id=type]:hover {
 }
 
 .sidebar {
-    height: 100%;
-    width: 210px;
+    height: 93.5%;
+    width: auto;
     position: fixed;
     z-index: 1;
     top: 0;
     left: 0;
     background-color: #dae7ea;
-    overflow-x: hidden;
+    overflow-x: auto;
     padding: 20px;
     float: right;
     border: solid 5px #80afb8;
