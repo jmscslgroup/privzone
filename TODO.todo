@@ -5,6 +5,9 @@ Backend:
 Frontend:
     ☐ Turn regions into json format specified in data_structure, and have a sendable message on click send.
     ☐ Make send button unclickable until VIN and at least one privacy region
+    ☐ Resize side container
+    ☐ Remove apply button
+    ☐ Format the output coordinates
 
 Static Frontend:
     ✔ Make map fullscreen @done(21-02-12)
