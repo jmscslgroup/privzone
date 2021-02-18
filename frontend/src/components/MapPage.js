@@ -165,6 +165,16 @@ export default class MapPage extends Component {
         console.log("SENDING...");
         });
 
+        // disabled send button until VIN and at least one privacy region are in
+        document.getElementById('id_input').addEventListener('change', function() {
+            document.getElementById('send_btn').disabled = false;
+        });
+
+        // test unclickable send button
+        document.getElementById('send_btn').addEventListener('click', function() {
+            document.getElementById('test_send_btn').innerHTML = "CLICKABLE!!!";
+        });
+
         // check for escape to do a soft reset and get rid of last drawn point
         document.addEventListener('keyup', function(event) {
         if (event.key == "Escape") {
@@ -201,11 +211,12 @@ export default class MapPage extends Component {
                 <input type="button" value="Reset" id="reset_btn" className="form_section" />
             </form>
             <form id="id_form">
-                <input type="id_input" placeholder="Enter ID" id="id_input" className="form_section" />
+                <input type="id_input" placeholder="Enter VIN" id="id_input" className="form_section" />
                 <input type="button" value="Send" id="send_btn" className="form_section" disabled/>
             </form>
             <p id="id-text-box"></p>
             <p id="coord-text-box"></p>
+            <p id="test_send_btn"></p>
         </div>
     </div>
     );
