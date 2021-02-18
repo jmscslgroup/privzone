@@ -160,11 +160,6 @@ export default class MapPage extends Component {
         }
         });
 
-        // id field apply button
-        document.getElementById('apply_btn').addEventListener('click', function () {
-        update_id();
-        });
-
         // send button
         document.getElementById('send_btn').addEventListener('click', function () {
         console.log("SENDING...");
@@ -199,6 +194,7 @@ export default class MapPage extends Component {
             <Button variant="contained" color="primary" to="/" component={Link}>Home</Button>
             <form id="type_form"> 
                 <select id="type" className="form_section">
+                    <option value="Disabled_Type" class="disabled" disabled selected>Select type of region</option>
                     <option value="Circle">Circle</option>
                     <option value="Polygon">Polygon</option>
                 </select>
@@ -206,8 +202,7 @@ export default class MapPage extends Component {
             </form>
             <form id="id_form">
                 <input type="id_input" placeholder="Enter ID" id="id_input" className="form_section" />
-                <input type="button" value="Apply" id="apply_btn" className="form_section" />
-                <input type="button" value="Send" id="send_btn" className="form_section" />
+                <input type="button" value="Send" id="send_btn" className="form_section" disabled/>
             </form>
             <p id="id-text-box"></p>
             <p id="coord-text-box"></p>
