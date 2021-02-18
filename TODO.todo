@@ -4,9 +4,10 @@ Backend:
 
 Frontend:
     ☐ Turn regions into json format specified in data_structure, and have a sendable message on click send.
-    ☐ Make send button unclickable until VIN and at least one privacy region
-    ☐ Resize side container
-    ☐ Remove apply button
+    ✔ Make send button unclickable until VIN is in @done(21-02-18 03:01)
+    ☐ Make send button unclickable until at least one privacy region is selected
+    ✔ Resize side container @done(21-02-18 03:00)
+    ✔ Remove apply button @done(21-02-18 03:00)
     ☐ Format the output coordinates
 
 Static Frontend:
