@@ -57,7 +57,7 @@ select[id=type]:hover {
 
 .sidebar {
     height: 93.5%;
-    width: auto;
+    width: 210px;
     position: fixed;
     z-index: 1;
     top: 0;
