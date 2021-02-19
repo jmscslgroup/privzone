@@ -3,12 +3,18 @@ Backend:
     ☐ Send email with data.
 
 Frontend:
+    ✔ Allow a default option for region selector. @high @done(21-02-19)
+    ✔ Moved sidebar to right, not to block +/- buttons. @done(21-02-19)
+    ✔ Make map and side bar take up all screen space @done(21-02-19)
     ☐ Turn regions into json format specified in data_structure, and have a sendable message on click send.
     ✔ Make send button unclickable until VIN is in @done(21-02-18 03:01)
     ☐ Make send button unclickable until at least one privacy region is selected
     ✔ Resize side container @done(21-02-18 03:00)
     ✔ Remove apply button @done(21-02-18 03:00)
-    ☐ Format the output coordinates
+    ☐ Format the output coordinates in accordance with data_structure/example_message.json
+    ☐ Reset button resets entire page incuding text in vin field
+    ☐ When done with debugging, remove debugging html components
+    ☐ Change buttons to material-ui?
 
 Static Frontend:
     ✔ Make map fullscreen @done(21-02-12)
