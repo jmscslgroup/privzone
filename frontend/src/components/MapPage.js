@@ -201,24 +201,23 @@ export default class MapPage extends Component {
         <div className="container">
             <div className="map" id="map"></div>
             <div className="sidebar">
-            <Button variant="contained" color="primary" to="/" component={Link}>Home</Button>
-            <form id="type_form"> 
-                <select id="type" className="form_section">
-                    <option value="Disabled_Type" class="disabled" disabled selected>Select type of region</option>
-                    <option value="Circle">Circle</option>
-                    <option value="Polygon">Polygon</option>
-                </select>
-                <input type="button" value="Reset" id="reset_btn" className="form_section" />
-            </form>
-            <form id="id_form">
-                <input type="id_input" placeholder="Enter VIN" id="id_input" className="form_section" />
-                <input type="button" value="Send" id="send_btn" className="form_section" disabled/>
-            </form>
-            <p id="id-text-box"></p>
-            <p id="coord-text-box"></p>
-            <p id="test_send_btn"></p>
+                <Button variant="contained" color="primary" to="/" component={Link}>Home</Button>
+                <form id="type_form"> 
+                    <select id="type" className="form_section">
+                        <option value="Circle">Circle</option>
+                        <option value="Polygon">Polygon</option>
+                    </select>
+                    <input type="button" value="Reset" id="reset_btn" className="form_section" />
+                </form>
+                <form id="id_form">
+                    <input type="id_input" placeholder="Enter VIN" id="id_input" className="form_section" />
+                    <input type="button" value="Send" id="send_btn" className="form_section" disabled/>
+                </form>
+                <p id="id-text-box"></p>
+                <p id="coord-text-box"></p>
+                <p id="test_send_btn"></p>
+            </div>
         </div>
-    </div>
     );
     }
 }
