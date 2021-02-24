@@ -5,4 +5,10 @@ from .models import Entry
 class EntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entry
-        fields = "__all__"
+        fields = ("vin", "regions", "created_at")
+
+
+class CreateEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Entry
+        fields = ("vin", "regions")
