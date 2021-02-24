@@ -20,6 +20,7 @@ Frontend:
     ✔ Reset button resets entire page incuding text in vin field @done(21-02-24)
     ✔ When done with debugging, remove debugging html components @done(21-02-24)
     ☐ Change buttons to material-ui?
+    ☐ Work on homepage to add instructions, etc.
 
 Static Frontend:
     ✔ Make map fullscreen @done(21-02-12)
