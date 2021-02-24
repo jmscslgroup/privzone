@@ -4,6 +4,6 @@ from django.db import models
 
 
 class Entry(models.Model):
-    vin = models.CharField(max_length=15, default="", unique=False)
-    data = models.TextField(default="", unique=False)
+    vin = models.CharField(max_length=17, unique=False)
+    regions = models.TextField(unique=False)
     created_at = models.DateTimeField(auto_now_add=True)
