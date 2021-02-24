@@ -1,19 +1,24 @@
 Backend:
-    ☐ Set up endpoint for json post requests with data.
-    ☐ Send email with data.
+    ✔ Set up endpoint for json post requests with data. @done(21-02-24)
+    ✔ Send email with data. @done(21-02-24)
+    ✔ Fix up javascript and get rid of redundancies @done(21-02-24)
+    ✔ Add checking of input at backend for correct format @done(21-02-24)
+    ✔ Wait for response to send email @done(21-02-24)
+    ✔ Format the email @done(21-02-24)
+    ✔ Timestamps @done(21-02-24)
 
 Frontend:
     ✔ Allow a default option for region selector. @high @done(21-02-19)
     ✔ Moved sidebar to right, not to block +/- buttons. @done(21-02-19)
     ✔ Make map and side bar take up all screen space @done(21-02-19)
-    ☐ Turn regions into json format specified in data_structure, and have a sendable message on click send.
+    ✔ Turn regions into json format specified in data_structure, and have a sendable message on click send. @done(21-02-24)
     ✔ Make send button unclickable until VIN is in @done(21-02-18 03:01)
-    ☐ Make send button unclickable until at least one privacy region is selected
+    ✔ Make send button unclickable until at least one privacy region is selected @done(21-02-24)
     ✔ Resize side container @done(21-02-18 03:00)
     ✔ Remove apply button @done(21-02-18 03:00)
-    ☐ Format the output coordinates in accordance with data_structure/example_message.json
-    ☐ Reset button resets entire page incuding text in vin field
-    ☐ When done with debugging, remove debugging html components
+    ✔ Format the output coordinates in accordance with data_structure/example_message.json @done(21-02-24)
+    ✔ Reset button resets entire page incuding text in vin field @done(21-02-24)
+    ✔ When done with debugging, remove debugging html components @done(21-02-24)
     ☐ Change buttons to material-ui?
 
 Static Frontend:
