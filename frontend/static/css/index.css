@@ -28,6 +28,9 @@ input[type=button] {
 input[type=button]:hover {
     background: #9bb2f1d7;
 }
+input[type=button]:disabled {
+    background: #484e5ed7;
+}
 input[type=id_input] {
     border: 1px solid #9bb2f1d7;
     color: black;
@@ -35,7 +38,7 @@ input[type=id_input] {
     padding: 10px 20px;
     border-radius: 3px;
 }
-input[type=id_input]:hover {
+input[type=id_input]:disabled {
     background: #9bb2f1d7;
 }
 select[id=type] {

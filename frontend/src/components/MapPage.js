@@ -22,8 +22,6 @@ export default class MapPage extends Component {
     // component did mount is not running???
     componentDidMount() {
 
-        console.log('here');
-
         var raster = new TileLayer({
             source: new OSM(),
         });
@@ -64,122 +62,146 @@ export default class MapPage extends Component {
         // current object being placed
         var draw;
         function addInteraction() {
-        var value = typeSelect.value;
-        if (value !== 'None') {
-            draw = new Draw({
-            source: source, // where the drawing occurs
-            type: typeSelect.value,
-            });
-            map.addInteraction(draw); // create new drawing on mouse
-        }
+            var value = typeSelect.value;
+            if (value !== 'None') {
+                draw = new Draw({
+                source: source, // where the drawing occurs
+                type: typeSelect.value,
+                });
+                map.addInteraction(draw); // create new drawing on mouse
+            }
         }
 
         // update coordinates when the source changes
         source.addEventListener("change", function() {
-        update_coords();
+            // var node = document.getElementById('coord-text-box');
+            // node.innerText = JSON.stringify(dat,null,2);
+            var dat = get_regions();
+            if (dat.length > 0 && get_vin().length == 17) {
+                document.getElementById('send_btn').disabled = false;
+            } else {
+                document.getElementById('send_btn').disabled = true;
+            }
+        });
+
+        document.getElementById('id_input').addEventListener('change', function () {
+            var dat = get_regions();
+            if (dat.length > 0 && get_vin().length == 17) {
+                document.getElementById('send_btn').disabled = false;
+            } else {
+                document.getElementById('send_btn').disabled = true;
+            }
         });
 
         // remove currently active drawing when selected a new draw type
         typeSelect.onchange = function () {
-        map.removeInteraction(draw);
-        // check the new type and do stuff
-        addInteraction();
+            map.removeInteraction(draw);
+            // check the new type and do stuff
+            addInteraction();
         };
 
         // soft reset (remove last drawn point)
         function clear_current_interactive() {
-        draw.removeLastPoint();
+            draw.removeLastPoint();
         }
 
         // hard reset that clears map
         function reset() {
-        draw.removeLastPoint();
-        source.refresh();
-        var node = document.getElementById('id-text-box');
-        node.innerText = "";
-        node = document.getElementById('coord-text-box');
-        node.innerText = "";
+            draw.removeLastPoint();
+            source.refresh();
+            document.getElementById('send_btn').disabled = true;
+            var node = document.getElementById('id-text-box');
+            node.innerText = "";
+            node = document.getElementById('coord-text-box');
+            node.innerText = "";
+            document.getElementById('id_input').value = "";
         };
 
-        // update id text
-        function update_id() {
-        var elm = document.getElementById('id_input');
-        var node = document.getElementById('id-text-box');
-        node.innerText = "ID: " + elm.value;
-        elm.value = "";
+        function get_vin() {
+            var elm = document.getElementById('id_input');
+            return elm.value;
         }
 
-        // formats circle data and will eventually add to object that will be exported on the click of send
-        function format_circle(element) {
-        // send as json data
-        var geo = element.getGeometry();
-        var center = toLonLat(geo.getCenter());
-        return "\n{ c: " + String(center) + ", r: " + String(geo.getRadius()) + "}";
-        }
-
-        // formats polygon data and will eventually add to object that will be exported on the click of send
-        function format_polygon(element) {
-        
-        // need [0] because it is nested?
-        var coords = element.getGeometry().getCoordinates()[0];
-        var final = [];
-        coords.forEach(e => {
-            final.push(toLonLat(e));
-        });
-        return "\n[" + String(final) + "]";
-        }
-
-        // updates coordinate text
-        function update_coords() {
-        var node = document.getElementById('coord-text-box');
-        var text = "Coords: [\n"
-        var lst = source.getFeatures().forEach((element, i) => {
-            text += "\t";
-            switch(element.getGeometry().getType()) {
-            case "Circle": text += format_circle(element); break;
-            case "Polygon": text += format_polygon(element); break;
-            default: text += "Unknown type??"; break;
-            }
-            if (i != source.getFeatures().length - 1) {
-            text += ',\n';
-            }
-        });
-        node.innerText = text + "\n\n]";
+        function get_regions() {
+            var regions = [];
+            source.getFeatures().forEach((element, i) => {
+                switch(element.getGeometry().getType()) {
+                    case "Circle":
+                        var geo = element.getGeometry();
+                        var center = toLonLat(geo.getCenter());
+                        var radius = geo.getRadius();
+                        regions.push({
+                            type: "circle",
+                            data: {
+                                center: center,
+                                radius: radius
+                            }
+                        });
+                    break;
+                    case "Polygon": 
+                        var coords = element.getGeometry().getCoordinates()[0];
+                        var final = [];
+                        coords.forEach(e => {
+                            final.push(toLonLat(e));
+                        });
+                        regions.push({
+                            type: "polygon",
+                            data: final
+                        });
+                    break;
+                }
+            });
+            return regions;
         }
 
         // reset button
         document.getElementById('reset_btn').addEventListener('click', function () {
-        reset();
+            reset();
         });
 
-        // id input field checking for enter
-        document.getElementById('id_input').addEventListener('keydown', function (event) {
-        if(event.key === 'Enter') {
-            event.preventDefault();
-            update_id();
+        function send_email(data) {
+            var vin = data.vin;
+            var regions = JSON.parse(data.regions);
+            var created_at = data.created_at;
+            var email = "rpg@email.arizona.edu";
+            var subject = `[PRIVZONE] Region Data :: ${vin} :: ${created_at}`;
+            var body = JSON.stringify({
+                vin: vin,
+                regions: regions,
+                created_at: created_at
+            }, null, 2);
+            window.open(`mailto:${email}?subject=${subject}&body=${encodeURIComponent(body)}`);
         }
-        });
 
         // send button
         document.getElementById('send_btn').addEventListener('click', function () {
-        console.log("SENDING...");
-        });
-
-        // disabled send button until VIN and at least one privacy region are in
-        document.getElementById('id_input').addEventListener('change', function() {
-            document.getElementById('send_btn').disabled = false;
-        });
-
-        // test unclickable send button
-        document.getElementById('send_btn').addEventListener('click', function() {
-            document.getElementById('test_send_btn').innerHTML = "CLICKABLE!!!";
+            var regions;
+            fetch("/api/add-entry/", {
+                method: "POST",
+                body: JSON.stringify({
+                    vin: get_vin(),
+                    regions: JSON.stringify(get_regions())
+                }),
+                headers: { "Content-Type": "application/json;" }
+            }).then(response => {
+                if (response.status != 201) {
+                    console.log("Bad request...");
+                }
+                else {
+                    return response.json();
+                }
+            }).then(res => {
+                if (res != undefined) {
+                    send_email(res);
+                }
+            });
         });
 
         // check for escape to do a soft reset and get rid of last drawn point
         document.addEventListener('keyup', function(event) {
-        if (event.key == "Escape") {
-            clear_current_interactive();
-        }
+            if (event.key == "Escape") {
+                clear_current_interactive();
+            }
         });
 
         // add interaction when loaded, so drawing can start instantly
@@ -210,7 +232,7 @@ export default class MapPage extends Component {
                     <input type="button" value="Reset" id="reset_btn" className="form_section" />
                 </form>
                 <form id="id_form">
-                    <input type="id_input" placeholder="Enter VIN" id="id_input" className="form_section" />
+                    <input type="id_input" placeholder="Enter VIN" maxLength="17" id="id_input" className="form_section" />
                     <input type="button" value="Send" id="send_btn" className="form_section" disabled/>
                 </form>
                 <p id="id-text-box"></p>
