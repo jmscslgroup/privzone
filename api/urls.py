@@ -1,4 +1,7 @@
 from django.urls import path
-from .views import EntryView
+from .views import EntryView, CreateEntryView
 
-urlpatterns = [path("home/", EntryView.as_view()), path("", EntryView.as_view())]
+urlpatterns = [
+    path("entries/", EntryView.as_view()),
+    path("add-entry/", CreateEntryView.as_view())
+]
