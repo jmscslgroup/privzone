@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0001_initial'),
+        ("api", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='entry',
-            name='data',
+            model_name="entry",
+            name="data",
             field=models.TextField(),
         ),
         migrations.AlterField(
-            model_name='entry',
-            name='vin',
+            model_name="entry",
+            name="vin",
             field=models.CharField(max_length=17),
         ),
     ]
