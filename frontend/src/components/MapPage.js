@@ -223,7 +223,6 @@ export default class MapPage extends Component {
         <div className="container">
             <div className="map" id="map"></div>
             <div className="sidebar">
-                <Button variant="contained" color="primary" to="/" component={Link}>Home</Button>
                 <form id="type_form"> 
                     <select id="type" className="form_section">
                         <option value="Circle">Circle</option>
