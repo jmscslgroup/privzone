@@ -1,4 +1,3 @@
-import ReactDOM from 'react-dom';
 import React, { Component } from "react";
 
 import 'ol/ol.css';
@@ -9,9 +8,6 @@ import View from 'ol/View';
 import {toLonLat} from 'ol/proj';
 import {OSM, Vector as VectorSource} from 'ol/source';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
-
-import { Button } from "@material-ui/core";
-import { Link } from "react-router-dom";
 
 export default class MapPage extends Component {
     
@@ -175,7 +171,6 @@ export default class MapPage extends Component {
 
         // send button
         document.getElementById('send_btn').addEventListener('click', function () {
-            var regions;
             fetch("/api/add-entry/", {
                 method: "POST",
                 body: JSON.stringify({

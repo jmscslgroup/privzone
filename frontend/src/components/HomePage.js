@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import MapPage from "./MapPage";
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
-import { Button, Grid, Typography } from "@material-ui/core";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 export default class HomePage extends Component {
     constructor(props) {
