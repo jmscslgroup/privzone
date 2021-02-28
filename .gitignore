@@ -263,3 +263,6 @@ pyvenv.cfg
 
 # dont ignore .github
 !.github
+
+#config
+django-config.json
