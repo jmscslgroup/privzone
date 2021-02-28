@@ -9,15 +9,15 @@
 
 ### Running
 
-###### Created using python 3.8
-
- - Setting up django.
-   - `python -m pip install -r requirements.txt -r dev_requirements.txt`
-   - `python manage.py makemigrations`
-   - `python manage.py migrate`
- - Setting up frontend.
-   - `cd frontend`
-   - `npm install`
-   - `npm run dev` (continuous rebuild on save) or `npm run build` (one time build)
- - Running the server.
+ - After installing python 3.8
+   - `python -m pip install -r requirements.txt`
+   - `python manage.py makemigrations` and `python manage.py migrate` to set up default database.
+ - Setup configuration file
+   - Create a json file with a key "SECRET_KEY".
+   - In privzone/settings.py, set `CONFIG_FILE` to be the relative path to that file.
+ - Test server locally.
+   - Make sure `debug=True` is set in privzone/settings.py
    - `python manage.py runserver`
+ - Ready for deployment
+   - Make sure `debug=False` is set in privzone/settings.py
+   - `python manage.py collectstatic`
