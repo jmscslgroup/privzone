@@ -159,7 +159,7 @@ export default class MapPage extends Component {
             var vin = data.vin;
             var regions = JSON.parse(data.regions);
             var created_at = data.created_at;
-            var email = "rpg@email.arizona.edu";
+            var email = "sprinkjm@arizona.edu";
             var subject = `[PRIVZONE] Region Data :: ${vin} :: ${created_at}`;
             var body = JSON.stringify({
                 vin: vin,
