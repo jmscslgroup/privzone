@@ -19,7 +19,7 @@
         ```json
         {"SECRET_KEY": "8278s8878hijhji286167"}
         ```
-   - If not placed in the base of directory, make sure to update `CONFIG_FILE` in privzone/settings.py to be the relative path to the config file.
+   - If not placed in the base directory, make sure to update `CONFIG_FILE` in privzone/settings.py to be the relative path to the config file.
  - Migrations
    - `python manage.py makemigrations` and `python manage.py migrate` to set up default database.
  - Test server locally.
