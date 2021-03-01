@@ -9,12 +9,19 @@
 
 ### Running
 
+
+
  - After installing python 3.8
    - `python -m pip install -r requirements.txt`
-   - `python manage.py makemigrations` and `python manage.py migrate` to set up default database.
  - Setup configuration file
-   - Create a json file with a key "SECRET_KEY".
-   - In privzone/settings.py, set `CONFIG_FILE` to be the relative path to that file.
+   - Create a json file named "django-config.json" with a key "SECRET_KEY" in the base directory of the project.
+   - Example config file contents: 
+        ```json
+        {"SECRET_KEY": "8278s8878hijhji286167"}
+        ```
+   - If not placed in the base of directory, make sure to update `CONFIG_FILE` in privzone/settings.py to be the relative path to the config file.
+ - Migrations
+   - `python manage.py makemigrations` and `python manage.py migrate` to set up default database.
  - Test server locally.
    - Make sure `debug=True` is set in privzone/settings.py
    - `python manage.py runserver`
