@@ -165,7 +165,7 @@ export default class MapPage extends Component {
                 vin: vin,
                 regions: regions,
                 created_at: created_at
-            }, null, 2);
+            });
             window.open(`mailto:${email}?subject=${subject}&body=${encodeURIComponent(body)}`);
         }
 
