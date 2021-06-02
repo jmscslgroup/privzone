@@ -13,35 +13,49 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import json
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-CONFIG_FILE = os.path.join(BASE_DIR, "django-config.json")
+env = environ.Env(
+    DEBUG=(bool, False),
+    DOCKER=(bool, False)
+)
 
-if os.path.isfile(CONFIG_FILE):
-    with open(CONFIG_FILE) as f:
-        config = json.load(f)
-        key_get = config["SECRET_KEY"]
+environ.Env.read_env()
+
+DEBUG = env('DEBUG')
+SECRET_KEY = env('SECRET_KEY')
+DOCKER = env('DOCKER')
+
+DATABASES = {}
+
+if DOCKER:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['DB'],
+            'USER': os.environ['PG_USER'],
+            'PASSWORD': os.environ['PG_PASSWD'],
+            'HOST': os.environ['DB_HOST'],
+            'PORT': os.environ['PGPORT']
+        }
+    }
 else:
-    if DEBUG:
-        print(
-            "Could not locate SECRET_KEY due to missing config file. Using a fake key because of DEBUG."
-        )
-        key_get = "FAKE_KEY"
-    else:
-        key_get = None
+    DATABASES = {
+        'default': {
+            'CONN_MAX_AGE': 0,
+            'ENGINE': 'django.db.backends.sqlite3',
+            'HOST': 'localhost',
+            'NAME': 'project.db',
+            'PASSWORD': '',
+            'PORT': '',
+            'USER': ''
+        }
+    }
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = key_get
-
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -55,6 +69,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "api.apps.ApiConfig",
     "rest_framework",
+    "django_extensions",
     "frontend.apps.FrontendConfig",
 ]
 
@@ -96,12 +111,12 @@ WSGI_APPLICATION = "privzone.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 
 
 # Password validation
