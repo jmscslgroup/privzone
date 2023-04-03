@@ -14,6 +14,9 @@ import json
 
 def vin_okay(vin):
     return len(vin) == 17
+    
+def offset_okay(offset):
+    return True
 
 
 def region_okay(region):
@@ -73,13 +76,15 @@ class CreateEntryView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             vin = serializer.data.get("vin")
+            offset = serializer.data.get("offset")
             regions = serializer.data.get("regions")
 
             status_region, regions_parsed = regions_okay(regions)
             status_vin = vin_okay(vin)
-            if status_region and status_vin:
+            status_offset = offset_okay(offset)
+            if status_region and status_vin and status_offset:
 
-                entry = Entry(vin=vin, regions=regions)
+                entry = Entry(vin=vin, offset=offset, regions=regions)
                 entry.created_at = timezone.now()
                 # uncomment this following line to save into database
                 # entry.save()

@@ -5,10 +5,10 @@ from .models import Entry
 class EntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entry
-        fields = ("vin", "regions", "created_at")
+        fields = ("vin", "offset", "regions", "created_at")
 
 
 class CreateEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entry
-        fields = ("vin", "regions")
+        fields = ("vin", "offset", "regions")
