@@ -3,11 +3,21 @@ import React, { Component } from "react";
 import 'ol/ol.css';
 import Geolocation from 'ol/Geolocation';
 import Draw from 'ol/interaction/Draw';
+import {Modify, Snap} from 'ol/interaction.js';
+import Polygon from 'ol/geom/Polygon.js';
+import Circle from 'ol/geom/Circle.js';
+import Point from 'ol/geom/Point.js';
 import Map from 'ol/Map';
 import View from 'ol/View';
-import {toLonLat} from 'ol/proj';
+import {toLonLat,fromLonLat} from 'ol/proj';
+import Feature from 'ol/Feature';
 import {OSM, Vector as VectorSource} from 'ol/source';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
+import {
+    Fill,
+    Stroke,
+    Style
+} from 'ol/style.js';
 
 export default class MapPage extends Component {
     
@@ -41,6 +51,11 @@ export default class MapPage extends Component {
             target: "map",
             view: view,
         });
+        
+        const modify = new Modify({source: source});
+        map.addInteraction(modify);
+        
+        let draw, snap; // global so we can remove them later
 
         // go to current location
         const geolocation = new Geolocation({
@@ -56,7 +71,7 @@ export default class MapPage extends Component {
         var typeSelect = document.getElementById('type');
 
         // current object being placed
-        var draw;
+        //var draw;
         function addInteraction() {
             var value = typeSelect.value;
             if (value !== 'None') {
@@ -65,6 +80,8 @@ export default class MapPage extends Component {
                 type: typeSelect.value,
                 });
                 map.addInteraction(draw); // create new drawing on mouse
+                snap = new Snap({source: source});
+                map.addInteraction(snap);
             }
         }
 
@@ -72,27 +89,29 @@ export default class MapPage extends Component {
         source.addEventListener("change", function() {
             // var node = document.getElementById('coord-text-box');
             // node.innerText = JSON.stringify(dat,null,2);
-            var dat = get_regions();
-            if (dat.length > 0 && get_vin().length == 17) {
-                document.getElementById('send_btn').disabled = false;
-            } else {
-                document.getElementById('send_btn').disabled = true;
-            }
+//            var dat = get_regions();
+//            if (dat.length > 0 && get_vin().length == 17) {
+//                document.getElementById('send_btn').disabled = false;
+//            } else {
+//                document.getElementById('send_btn').disabled = true;
+//            }
         });
 
         document.getElementById('id_input').addEventListener('change', function () {
-            var dat = get_regions();
-            if (dat.length > 0 && get_vin().length == 17) {
-                document.getElementById('send_btn').disabled = false;
-            } else {
-                document.getElementById('send_btn').disabled = true;
-            }
+//            var dat = get_regions();
+//            if (dat.length > 0 && get_vin().length == 17) {
+//                document.getElementById('send_btn').disabled = false;
+//            } else {
+//                document.getElementById('send_btn').disabled = true;
+//            }
         });
 
         // remove currently active drawing when selected a new draw type
         typeSelect.onchange = function () {
             map.removeInteraction(draw);
             // check the new type and do stuff
+//            addInteraction();
+            map.removeInteraction(snap);
             addInteraction();
         };
 
@@ -111,10 +130,16 @@ export default class MapPage extends Component {
             node = document.getElementById('coord-text-box');
             node.innerText = "";
             document.getElementById('id_input').value = "";
+            document.getElementById('id_offset').value = "";
         };
 
         function get_vin() {
             var elm = document.getElementById('id_input');
+            return elm.value;
+        }
+        
+        function get_offset() {
+            var elm = document.getElementById('id_offset');
             return elm.value;
         }
 
@@ -157,12 +182,14 @@ export default class MapPage extends Component {
 
         function send_email(data) {
             var vin = data.vin;
+            var offset = data.offset;
             var regions = JSON.parse(data.regions);
             var created_at = data.created_at;
-            var email = "sprinkjm@arizona.edu";
-            var subject = `[PRIVZONE] Region Data :: ${vin} :: ${created_at}`;
+            var email = "nobody@nowhere.internet";
+            var subject = `[PRIVZONE] Region Data :: ${vin} :: ${created_at} :: ${offset}`;
             var body = JSON.stringify({
                 vin: vin,
+                offset: offset,
                 regions: regions,
                 created_at: created_at
             });
@@ -175,6 +202,7 @@ export default class MapPage extends Component {
                 method: "POST",
                 body: JSON.stringify({
                     vin: get_vin(),
+                    offset: get_offset(),
                     regions: JSON.stringify(get_regions())
                 }),
                 headers: { "Content-Type": "application/json;" }
@@ -191,6 +219,196 @@ export default class MapPage extends Component {
                 }
             });
         });
+        
+        // fake it button
+        document.getElementById('fake_btn').addEventListener('click', function () {
+//            var type = "Polygon";
+//            let geometryFunction = function (coordinates, geometry) {
+//                console.log("iefhoiadfh");
+//                const newCoordinates = [];
+//                newCoordinates.push([0,0]);
+//                newCoordinates.push([50,0]);
+//                newCoordinates.push([50,50]);
+//                newCoordinates.push([0,50]);
+//                newCoordinates.push(newCoordinates[0].slice());
+//                if (!geometry) {
+//                    geometry = new Polygon([newCoordinates]);
+//                } else {
+//                    geometry.setCoordinates([newCoordinates]);
+//                }
+//                return geometry;
+//            }
+//            draw = new Draw({
+//                source: source, // where the drawing occurs
+//                type: "Polygon",
+//                geometryFunction: geometryFunction,
+//            });
+//            map.addInteraction(draw); // create new drawing on mouse
+//            //map.addInteraction();
+            
+            
+            const newCoordinates = [];
+            newCoordinates.push(fromLonLat([0, 0]));
+            newCoordinates.push(fromLonLat([45, 0]));
+            newCoordinates.push(fromLonLat([45, 45]));
+            newCoordinates.push(fromLonLat([0, 45]));
+            newCoordinates.push(fromLonLat([0, 0]));
+            //newCoordinates.push(newCoordinates[0].slice());
+            
+            var polyone = new Polygon([newCoordinates]);
+            var featureone = new Feature(polyone);
+            
+//            featureone.setStyle(new Style({
+//                fill: new Fill({
+//                  color: 'red'
+//                })
+//              }))
+            
+            source.addFeature(featureone);
+            console.log("iefhoiadfh");
+            //source.addPolygon(newCoordinates);
+        });
+        
+        function importJson(json) {
+            var result = JSON.parse(json);
+            var formatted = JSON.stringify(result, null, 2);
+                document.getElementById('id_parse').value = formatted;
+              
+              var vin = result['vin'];
+              var regions = result['regions'];
+              console.log(`vin = ${vin}`);
+              console.log(`regions: = ${regions.length}`);
+              for(let i = 0; i < regions.length; i++) {
+                  console.log(`- region ${i} is type ${regions[i]['type']}`);
+                  addRegion(regions[i]);
+              }
+              
+              document.getElementById('id_input').value = result['vin'];
+              document.getElementById('id_offset').value = result['offset'];
+        }
+        
+        function importCsv(csv) {
+            for(let row of csv.split("\n")) {
+                //   console.log(`row = ${row}`);
+                let cols = row.split(",");
+                //console.log(`cols = ${cols[2]}`);
+                
+                
+                var center = fromLonLat([cols[2],cols[3]]);
+                var pointone = new Point(center);
+                var featureone = new Feature(pointone);
+                
+                source.addFeature(featureone);
+            }
+            
+            
+        
+        }
+        
+        // import button
+        document.getElementById('import_btn').addEventListener('click', function () {
+            var files = document.getElementById('selectedFile').files;
+            //console.log(files);
+            if (files.length <= 0) {
+                return false;
+            }
+            
+            
+            var fr = new FileReader();
+
+            if(files[0].name.indexOf('.json') > -1) {
+                fr.onload = function(e) {
+                    //console.log(e);
+                    //console.log("JSON:");
+                    console.log(e.target.result);
+                    importJson(e.target.result);
+                    //                var result = JSON.parse(e.target.result);
+                    //                var formatted = JSON.stringify(result, null, 2);
+                    //                    document.getElementById('id_parse').value = formatted;
+                    //
+                    //                  var vin = result['vin'];
+                    //                  var regions = result['regions'];
+                    //                  console.log(`vin = ${vin}`);
+                    //                  console.log(`regions: = ${regions.length}`);
+                    //                  for(let i = 0; i < regions.length; i++) {
+                    //                      console.log(`- region ${i} is type ${regions[i]['type']}`);
+                    //                      addRegion(regions[i]);
+                    //                  }
+                    //
+                    //                  document.getElementById('id_input').value = result['vin'];
+                    //                  document.getElementById('id_offset').value = result['offset'];
+                }
+              } else if(files[0].name.indexOf('.csv') > -1) {
+                  
+//                console.log("CSV!");
+                  fr.onload = function(e) {
+                     // console.log(e);
+                      //console.log("CSV:");
+                      //console.log(e.target.result);
+                      importCsv(e.target.result);
+                  }
+              } else {
+                  console.log("unsupported filetype!");
+              }
+
+              fr.readAsText(files.item(0));
+        });
+        
+        function addRegion(region, hysteresis=false) {
+            
+            if(region['type'] == 'circle') {
+                var center = fromLonLat(region['data']['center']);
+                var radius = region['data']['radius'];
+                var circleone = new Circle(center,radius);
+                var featureone = new Feature(circleone);
+                if(hysteresis) {
+//                    var style = featureone.getStyle();
+//                    style.fill.color = 'red';
+//                    featureone.setStyle(style);
+                    featureone.setStyle(new Style({
+                        stroke: new Stroke({
+                       // lineDash: 1,
+                        color: 'red'
+                    })
+                    }))
+                    
+                }
+                
+                source.addFeature(featureone);
+                console.log("circle added");
+            } else {
+                const coords = [];
+                for(let i = 0; i < region['data'].length; i++) {
+                    coords.push(fromLonLat(region['data'][i]));
+                }
+                //            coords.push(fromLonLat([0, 0]));
+                coords.push(coords[0].slice());
+                
+                var polyone = new Polygon([coords]);
+                var featureone = new Feature(polyone);
+                
+                if(hysteresis) {
+//                    var style = featureone.getStyle();
+//                    style.fill.color = 'red';
+//                    featureone.setStyle(style);
+                    featureone.setStyle(new Style({
+                        stroke: new Stroke({
+                       // lineDash: 1,
+                        color: 'red'
+                    })
+                    }))
+                    
+                }
+                
+                
+                source.addFeature(featureone);
+                console.log("polygon added");
+            }
+            
+            if('hysteresis' in region) {
+                addRegion(region['hysteresis'], true);
+            }
+        }
 
         // check for escape to do a soft reset and get rid of last drawn point
         document.addEventListener('keyup', function(event) {
@@ -198,9 +416,155 @@ export default class MapPage extends Component {
                 clear_current_interactive();
             }
         });
+        
+        var myCharacteristic;
+        // check for bluetooth stuff
+//        document.addEventListener('blue_btn', function(event) {
+        document.getElementById('blue_btn').addEventListener('click', function () {
+            console.log("Blue fddaba dee");
+            
+            
+//            navigator.bluetooth.getAvailability().then((available) => {
+//              if (available) {
+//                console.log("This device supports Bluetooth!");
+//              } else {
+//                console.log("Doh! Bluetooth is not supported");
+//              }
+//            });
+            
+           // let optionalServices = document.getElementById('optionalServices').value
+            //    .split(/, ?/).map(s => s.startsWith('0x') ? parseInt(s) : s)
+             //   .filter(s => s && BluetoothUUID.getService);
+            
+//            const options = {
+//                //filters: [ { name: "1J8GX58S03C507022" } ],
+////            filters: [
+//////                        {services: ["00000001-710e-4a5b-8d75-3e5b444bc3cf"] }
+////                      //{namePrefix: "Temperature" }
+////                        {namePrefix: "T" }
+////                      ],
+//              acceptAllDevices : true,
+//              optionalServices: ['00000001-710e-4a5b-8d75-3e5b444b3c3f'] // Required to access service later.
+//            };
+            
+            let options = {};
+            
+             // options.acceptAllDevices = true;
+//            options.filters = [ {name: "circles"} ];
+            options.filters = [ {services: ['00000001-710e-4a5b-8d75-3e5b444bc3cf'] } ];
+//            options.filters = [ {services: ["00000001-710E-4A5B-8D75-3E5B444B3C3F"] } ];
+             // optionalServices: [] // Required to access service later.
+//            options.optionalServices = [ '00000001-710e-4a5b-8d75-3e5b444bc3cf' ];
+//            };
+            
+            console.log('Requesting Bluetooth Device...');
+            console.log('with ' + JSON.stringify(options));
+            navigator.bluetooth.requestDevice( options )
+            .then(device => {
+                //console.log(`Name: ${device.name}`);
+                console.log('> Name:             ' + device.name);
+                console.log('> Id:               ' + device.id);
+                console.log('> Connected:        ' + device.gatt.connected);
+                
+                device.addEventListener('gattserverdisconnected', onDisconnected);
+                device.gatt.connect()
+                .then(server => {
+                    console.log('Connected: ' + server.connected);
+                    //server.getPrimaryServices().
+                    //then( services => console.log('server.getPrimaryServices(): -> ' + services.getPrimaryServices()));
+                    
+                    server.getPrimaryService('00000001-710e-4a5b-8d75-3e5b444bc3cf')
+                    //                    .then(service => console.log('yay!'));
+                    //                })
+                    .then(service => {
+                        console.log('getting characteristic 00000002-710e-4a5b-8d75-3e5b444bc3cf...');
+                        service.getCharacteristic('00000003-710e-4a5b-8d75-3e5b444bc3cf')
+                        .then(characteristic => {
+                            myCharacteristic = characteristic;
+                        });
+                        return service.getCharacteristic('00000002-710e-4a5b-8d75-3e5b444bc3cf');
+                    })
+                    .then(characteristic =>  {
+                        
+                        console.log('Starting notifications...');
+                        return characteristic.startNotifications();
+                        
+                    })
+                    .then(characteristic => {
+                        console.log('Adding eventListener...');
+                        characteristic.addEventListener('characteristicvaluechanged',
+//                                                        handleCharacteristicValueChanged);
+                                                          handleNotifications);
+                        console.log('Notifications have been started.');
+                    });
+                    
+                })
+            })
+            .catch(error => { console.error('There was an issue: ' + error); });
+        });
+        
+        function handleCharacteristicValueChanged(event) {
+          const value = event.target.value;
+            var result = "";
+            console.log("value: " + value);
+            console.log("char code: " + String.fromCharCode(value));
+            for (var i=0; i< value.byteLength; i++){
+//                result += String.fromCharCode(value[i]);
+                result += value.getUint8(i);
+                console.log('Received ' + value.getUint8(i));
+            }
+          console.log('Received length ' + value.byteLength + ': ' + result);
+        }
+        
+        function handleNotifications(event) {
+          let value = event.target.value;
+          let a = [];
+          // Convert raw data bytes to hex values just for the sake of showing something.
+          // In the "real" world, you'd use data.getUint8, data.getUint16 or even
+          // TextDecoder to process raw data bytes.
+          for (let i = 0; i < value.byteLength; i++) {
+            a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
+              a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
+          }
+          console.log('> ' + a.join(' '));
+            let utf8decoder = new TextDecoder();
+            console.log(utf8decoder.decode(value));
+            
+            document.getElementById('id_cpu').value = utf8decoder.decode(value);
+        }
+        
+        function onDisconnected(event) {
+          // Object event.target is Bluetooth Device getting disconnected.
+          myCharacteristic = null;
+          console.log('> Bluetooth Device disconnected');
+        }
+        
+        
+        function sendToBlue(value) {
+            if (!myCharacteristic) {
+                return;
+              }
+            let encoder = new TextEncoder('utf-8');
+//             let value = "C";
+            console.log('Setting Characteristic User Description...');
+            myCharacteristic.writeValue(encoder.encode(value))
+             .then(_ => {
+               console.log('> Characteristic User Description changed to: ' + value);
+             })
+             .catch(error => {
+                 console.log('Argh! ' + error);
+             });
+        }
+        document.getElementById('c_btn').addEventListener('click', function () {
+            sendToBlue("C");
+        })
+        document.getElementById('f_btn').addEventListener('click', function () {
+            sendToBlue("F");
+        })
 
         // add interaction when loaded, so drawing can start instantly
         addInteraction();
+        
 
         // save map and layer references to local state
         this.setState({ 
@@ -227,7 +591,18 @@ export default class MapPage extends Component {
                 </form>
                 <form id="id_form">
                     <input type="id_input" placeholder="Enter VIN" maxLength="17" id="id_input" className="form_section" />
-                    <input type="button" value="Send" id="send_btn" className="form_section" disabled/>
+                    <input type="id_input" placeholder="Offset in Meters" id="id_offset" className="form_section" />
+                    <input type="button" value="Send" id="send_btn" className="form_section"/>
+                    <input type="button" value="Fake Poly" id="fake_btn" className="form_section"/>
+                    <input type="file" id="selectedFile" />
+                    <input type="button" value="Import" id="import_btn" className="form_section"/>
+                    <input type="id_input" placeholder="Parsed" id="id_parse" className="form_section" />
+                    <input type="button" value="Blue" id="blue_btn" className="form_section"/>
+                    <input type="id_input" placeholder="CPU Temp" id="id_cpu" className="form_section" />
+                    <input type="button" value="Set C" id="c_btn" className="form_section"/>
+                    <input type="button" value="Set F" id="f_btn" className="form_section"/>
+
+
                 </form>
                 <p id="id-text-box"></p>
                 <p id="coord-text-box"></p>
