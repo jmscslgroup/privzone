@@ -418,10 +418,12 @@ export default class MapPage extends Component {
         });
         
         var myCharacteristic;
+        var myCommandCharacteristic;
+        var myConfigCharacteristic;
         // check for bluetooth stuff
 //        document.addEventListener('blue_btn', function(event) {
         document.getElementById('blue_btn').addEventListener('click', function () {
-            console.log("Blue fddaba dee");
+            console.log("Blue daba dee");
             
             
 //            navigator.bluetooth.getAvailability().then((available) => {
@@ -451,69 +453,135 @@ export default class MapPage extends Component {
             
              // options.acceptAllDevices = true;
 //            options.filters = [ {name: "circles"} ];
-            options.filters = [ {services: ['00000001-710e-4a5b-8d75-3e5b444bc3cf'] } ];
+            options.filters = [ {services: ['00000001-3d3d-3d3d-3d3d-3d3d3d3d3d3d'] } ];
 //            options.filters = [ {services: ["00000001-710E-4A5B-8D75-3E5B444B3C3F"] } ];
              // optionalServices: [] // Required to access service later.
 //            options.optionalServices = [ '00000001-710e-4a5b-8d75-3e5b444bc3cf' ];
 //            };
             
-            console.log('Requesting Bluetooth Device...');
-            console.log('with ' + JSON.stringify(options));
+            console.log('BLE> Requesting Bluetooth Device...');
+            navigator.bluetooth.addEventListener('availabilitychanged', onAvailabiltyChanged);  // this is for Bluetooth as a whole, not indiivdual device connectivity
+            console.log('BLE> with ' + JSON.stringify(options));
             navigator.bluetooth.requestDevice( options )
             .then(device => {
                 //console.log(`Name: ${device.name}`);
-                console.log('> Name:             ' + device.name);
-                console.log('> Id:               ' + device.id);
-                console.log('> Connected:        ' + device.gatt.connected);
+                console.log('BLE> Name:             ' + device.name);
+                console.log('BLE> Id:               ' + device.id);
+                console.log('BLE> Connected:        ' + device.gatt.connected);
                 
                 device.addEventListener('gattserverdisconnected', onDisconnected);
+                device.addEventListener('advertisementreceived', onAdvertisementReceived);
                 device.gatt.connect()
                 .then(server => {
-                    console.log('Connected: ' + server.connected);
+                    console.log('BLE> Connected: ' + server.connected);
                     //server.getPrimaryServices().
                     //then( services => console.log('server.getPrimaryServices(): -> ' + services.getPrimaryServices()));
                     
-                    server.getPrimaryService('00000001-710e-4a5b-8d75-3e5b444bc3cf')
+//                    server.getPrimaryService('00000001-710e-4a5b-8d75-3e5b444bc3cf')
+                    server.getPrimaryService('00000001-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
                     //                    .then(service => console.log('yay!'));
                     //                })
                     .then(service => {
-                        console.log('getting characteristic 00000002-710e-4a5b-8d75-3e5b444bc3cf...');
+                        device.addEventListener('serviceadded', onServiceAdded);
+                        device.addEventListener('servicechanged', onServiceChanged);
+                        device.addEventListener('serviceremoved', onServiceRemoved);
+                        
+                        console.log('BLE> getting characteristic 00000002-3d3d-3d3d-3d3d-3d3d3d3d3d3d...');
+                        service.getCharacteristic('00000002-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
+                        .then(characteristic => {
+                            console.log('BLE> Starting notifications...');
+                            //                        return characteristic.startNotifications();
+                            //
+                            //                    })
+                            //                    .then(characteristic => {
+                            characteristic.startNotifications().then(characteristic => {
+                                console.log('BLE> Adding eventListener...');
+                                characteristic.addEventListener('characteristicvaluechanged',
+                                                                //                                                        handleCharacteristicValueChanged);
+                                                                handleNotificationCirclesCharacteristic);
+                                console.log('BLE> Notifications have been started.');
+                            });
+                            console.log('BLE> Getting Descriptors...');
+                            return characteristic.getDescriptors();
+                        }).then(descriptors => {
+                            console.log('BLE> - Descriptors: ' +
+                                        descriptors.map(c => c.uuid).join('\n' + ' '.repeat(19)));
+                        });
+                        
+                        
+                        console.log('BLE> getting characteristic 00000003-3d3d-3d3d-3d3d-3d3d3d3d3d3d...');
+                        service.getCharacteristic('00000003-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
+                        .then(characteristic => {
+                            console.log('BLE> - ' + characteristic);
+                            myCommandCharacteristic = characteristic;
+//                            characteristic.getDescriptors()
+//                            .then(descriptors => {
+//                                console.log('BLE> - Descriptors: ' +
+//                                            descriptors.map(c => c.uuid).join('\n' + ' '.repeat(19)));
+//                            });
+                        });
+                        
+                        console.log('BLE> getting characteristic 00000004-3d3d-3d3d-3d3d-3d3d3d3d3d3d...');
+                        service.getCharacteristic('00000004-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
+                        .then(characteristic => {
+                            console.log('BLE> - ' + characteristic);
+                            myConfigCharacteristic = characteristic;
+                        });
+                        
+                        console.log('BLE> getting characteristic 00000003-710e-4a5b-8d75-3e5b444bc3cf...');
                         service.getCharacteristic('00000003-710e-4a5b-8d75-3e5b444bc3cf')
                         .then(characteristic => {
+                            console.log('BLE> - ' + characteristic);
                             myCharacteristic = characteristic;
+//                            characteristic.getDescriptors()
+//                            .then(descriptors => {
+//                                console.log('BLE> - Descriptors: ' +
+//                                            descriptors.map(c => c.uuid).join('\n' + ' '.repeat(19)));
+//                            });
                         });
-                        return service.getCharacteristic('00000002-710e-4a5b-8d75-3e5b444bc3cf');
+                        //                        return service.getCharacteristic('00000002-710e-4a5b-8d75-3e5b444bc3cf');
+                        //                    })
+                        //                    .then(characteristic =>  {
+                        console.log('BLE> getting characteristic 00000002-710e-4a5b-8d75-3e5b444bc3cf...');
+                        service.getCharacteristic('00000002-710e-4a5b-8d75-3e5b444bc3cf')
+                        .then(characteristic =>  {
+                            
+                            characteristic.getDescriptors()
+                            .then(descriptors => {
+                                console.log('BLE> - Descriptors: ' +
+                                            descriptors.map(c => c.uuid).join('\n' + ' '.repeat(19)));
+                            });
+                            console.log('BLE> Starting notifications...');
+                            //                        return characteristic.startNotifications();
+                            //
+                            //                    })
+                            //                    .then(characteristic => {
+                            characteristic.startNotifications().then(characteristic => {
+                                console.log('BLE> Adding eventListener...');
+                                characteristic.addEventListener('characteristicvaluechanged',
+                                                                //                                                        handleCharacteristicValueChanged);
+                                                                handleNotifications);
+                                console.log('BLE> Notifications have been started.');
+                            });
+                            
+                        })
                     })
-                    .then(characteristic =>  {
-                        
-                        console.log('Starting notifications...');
-                        return characteristic.startNotifications();
-                        
-                    })
-                    .then(characteristic => {
-                        console.log('Adding eventListener...');
-                        characteristic.addEventListener('characteristicvaluechanged',
-//                                                        handleCharacteristicValueChanged);
-                                                          handleNotifications);
-                        console.log('Notifications have been started.');
-                    });
-                    
                 })
             })
-            .catch(error => { console.error('There was an issue: ' + error); });
+            .catch(error => { console.error('BLE> There was an issue: ' + error); });
         });
         
         function handleCharacteristicValueChanged(event) {
           const value = event.target.value;
             var result = "";
-            console.log("value: " + value);
-            console.log("char code: " + String.fromCharCode(value));
+            console.log("BLE> value: " + value);
+            console.log("BLE> char code: " + String.fromCharCode(value));
             for (var i=0; i< value.byteLength; i++){
 //                result += String.fromCharCode(value[i]);
                 result += value.getUint8(i);
-                console.log('Received ' + value.getUint8(i));
+                console.log('BLE> Received ' + value.getUint8(i));
             }
-          console.log('Received length ' + value.byteLength + ': ' + result);
+          console.log('BLE> Received length ' + value.byteLength + ': ' + result);
         }
         
         function handleNotifications(event) {
@@ -526,19 +594,81 @@ export default class MapPage extends Component {
             a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
               a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
           }
-          console.log('> ' + a.join(' '));
+          console.log('BLE> ' + a.join(' '));
             let utf8decoder = new TextDecoder();
             console.log(utf8decoder.decode(value));
             
             document.getElementById('id_cpu').value = utf8decoder.decode(value);
         }
         
+        var buffer = "";
+        var finalMessage = null;
+        function handleNotificationCirclesCharacteristic(event) {
+          let value = event.target.value;
+//          let a = [];
+          // Convert raw data bytes to hex values just for the sake of showing something.
+          // In the "real" world, you'd use data.getUint8, data.getUint16 or even
+          // TextDecoder to process raw data bytes.
+//          for (let i = 0; i < value.byteLength; i++) {
+//            a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
+//              a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
+//          }
+//          console.log('BLE> handleNotificationCirclesCharacteristic(): ' + a.join(' '));
+            let utf8decoder = new TextDecoder();
+            buffer = buffer.concat(utf8decoder.decode(value));
+            //console.log('BLE> CircleNotification: ' + utf8decoder.decode(value));
+            //console.log('BLE> CircleNotification: num bytes: ' + value.byteLength + ' final char: ' + value.getUint8(value.byteLength-1));
+            if(value.getUint8(value.byteLength-1) == 0) {
+                
+                finalMessage = buffer.slice(0,buffer.length-2);
+                buffer = "";
+                
+                console.log('BLE> CircleNotification: This was the final message: ' + finalMessage);
+                importJson(finalMessage);
+            }
+            
+//            document.getElementById('id_cpu').value = utf8decoder.decode(value);
+        }
+        
         function onDisconnected(event) {
           // Object event.target is Bluetooth Device getting disconnected.
           myCharacteristic = null;
-          console.log('> Bluetooth Device disconnected');
+          console.log('BLE> Bluetooth Device disconnected');
         }
         
+        function onAvailabiltyChanged(event) {
+          console.log('BLE> Availability changed: ' + event.value);
+        }
+        function onAdvertisementReceived(event) {
+          console.log('BLE> Advertisement Received: ' + event.value);
+        }
+        
+        
+        function onServiceAdded(event) {
+          console.log('BLE> Service Added: ' + event.value);
+        }
+        function onServiceChanged(event) {
+          console.log('BLE> Service Changed: ' + event.value);
+        }
+        function onServiceRemoved(event) {
+          console.log('BLE> Service Removed: ' + event.value);
+        }
+        
+        function sendCirclesCommand(value) {
+            if (!myCommandCharacteristic) {
+                return;
+              }
+            let encoder = new TextEncoder('utf-8');
+//             let value = "C";
+            console.log('BLE> Setting Command Characteristic User Description...');
+            myCommandCharacteristic.writeValue(encoder.encode(value))
+             .then(_ => {
+               console.log('BLE> Command Characteristic User Description changed to: ' + value);
+             })
+             .catch(error => {
+                 console.log('BLE> Argh! ' + error);
+             });
+        }
         
         function sendToBlue(value) {
             if (!myCharacteristic) {
@@ -546,20 +676,46 @@ export default class MapPage extends Component {
               }
             let encoder = new TextEncoder('utf-8');
 //             let value = "C";
-            console.log('Setting Characteristic User Description...');
+            console.log('BLE> Setting Characteristic User Description...');
             myCharacteristic.writeValue(encoder.encode(value))
              .then(_ => {
-               console.log('> Characteristic User Description changed to: ' + value);
+               console.log('BLE> Characteristic User Description changed to: ' + value);
              })
              .catch(error => {
-                 console.log('Argh! ' + error);
+                 console.log('BLE> Argh! ' + error);
              });
         }
+        function sendCirclesConfig(value) {
+            if (!myConfigCharacteristic) {
+                return;
+              }
+            let encoder = new TextEncoder('utf-8');
+//             let value = "C";
+            console.log('BLE> Setting Config Characteristic User Description...');
+            myConfigCharacteristic.writeValue(encoder.encode(value))
+             .then(_ => {
+               console.log('BLE> Config Characteristic User Description changed to: ' + value);
+             })
+             .catch(error => {
+                 console.log('BLE> Argh! ' + error);
+             });
+        }
+        
         document.getElementById('c_btn').addEventListener('click', function () {
             sendToBlue("C");
         })
         document.getElementById('f_btn').addEventListener('click', function () {
             sendToBlue("F");
+        })
+        document.getElementById('cmd_btn').addEventListener('click', function () {
+            sendCirclesCommand("Gimme");
+        })
+        document.getElementById('sendcfg_btn').addEventListener('click', function () {
+            sendCirclesConfig("{example: 'data'}");
+        })
+        document.getElementById('readcfg_btn').addEventListener('click', function () {
+            //readCirclesConfig();
+            sendCirclesCommand("R");
         })
 
         // add interaction when loaded, so drawing can start instantly
@@ -601,6 +757,9 @@ export default class MapPage extends Component {
                     <input type="id_input" placeholder="CPU Temp" id="id_cpu" className="form_section" />
                     <input type="button" value="Set C" id="c_btn" className="form_section"/>
                     <input type="button" value="Set F" id="f_btn" className="form_section"/>
+                    <input type="button" value="Send Cmd" id="cmd_btn" className="form_section"/>
+                    <input type="button" value="Send Config" id="sendcfg_btn" className="form_section"/>
+                    <input type="button" value="Read Config" id="readcfg_btn" className="form_section"/>
 
 
                 </form>
