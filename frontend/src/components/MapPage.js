@@ -179,20 +179,36 @@ export default class MapPage extends Component {
         document.getElementById('reset_btn').addEventListener('click', function () {
             reset();
         });
-
-        function send_email(data) {
+        
+        function generate_config(data) {
             var vin = data.vin;
             var offset = data.offset;
             var regions = JSON.parse(data.regions);
             var created_at = data.created_at;
-            var email = "nobody@nowhere.internet";
-            var subject = `[PRIVZONE] Region Data :: ${vin} :: ${created_at} :: ${offset}`;
-            var body = JSON.stringify({
+            //var email = "nobody@nowhere.internet";
+            //var subject = `[PRIVZONE] Region Data :: ${vin} :: ${created_at} :: ${offset}`;
+            return {
                 vin: vin,
                 offset: offset,
                 regions: regions,
                 created_at: created_at
-            });
+            };
+        }
+
+        function send_email(data) {
+            var vin = data.vin;
+            var offset = data.offset;
+//            var regions = JSON.parse(data.regions);
+            var created_at = data.created_at;
+            var email = "nobody@nowhere.internet";
+            var subject = `[PRIVZONE] Region Data :: ${vin} :: ${created_at} :: ${offset}`;
+//            var body = JSON.stringify({
+//                vin: vin,
+//                offset: offset,
+//                regions: regions,
+//                created_at: created_at
+//            });
+            var body = JSON.stringify(generate_config(data));
             window.open(`mailto:${email}?subject=${subject}&body=${encodeURIComponent(body)}`);
         }
 
@@ -420,6 +436,7 @@ export default class MapPage extends Component {
         var myCharacteristic;
         var myCommandCharacteristic;
         var myConfigCharacteristic;
+        var hereToThePiCharacteristic;
         // check for bluetooth stuff
 //        document.addEventListener('blue_btn', function(event) {
         document.getElementById('blue_btn').addEventListener('click', function () {
@@ -528,6 +545,13 @@ export default class MapPage extends Component {
                             myConfigCharacteristic = characteristic;
                         });
                         
+                        console.log('BLE> getting characteristic 00000005-3d3d-3d3d-3d3d-3d3d3d3d3d3d...');
+                        service.getCharacteristic('00000005-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
+                        .then(characteristic => {
+                            console.log('BLE> - ' + characteristic);
+                            hereToThePiCharacteristic = characteristic;
+                        });
+                        
                         console.log('BLE> getting characteristic 00000003-710e-4a5b-8d75-3e5b444bc3cf...');
                         service.getCharacteristic('00000003-710e-4a5b-8d75-3e5b444bc3cf')
                         .then(characteristic => {
@@ -620,14 +644,32 @@ export default class MapPage extends Component {
             //console.log('BLE> CircleNotification: num bytes: ' + value.byteLength + ' final char: ' + value.getUint8(value.byteLength-1));
             if(value.getUint8(value.byteLength-1) == 0) {
                 
-                finalMessage = buffer.slice(0,buffer.length-2);
+                finalMessage = buffer.slice(0,buffer.length-1);
                 buffer = "";
                 
-                console.log('BLE> CircleNotification: This was the final message: ' + finalMessage);
-                importJson(finalMessage);
+                //console.log('BLE> CircleNotification: This was the final message: ' + finalMessage);
+                
+                console.log("BLE> Input received");
+//                importJson(finalMessage);
+                handleCirclesInput(finalMessage)
             }
             
 //            document.getElementById('id_cpu').value = utf8decoder.decode(value);
+        }
+        
+        function handleCirclesInput(message) {
+            var input = JSON.parse(message);
+            console.log("File type: " + input['type']);
+            //console.log("File contents: " + input['contents']);
+            console.log("File length:  " + input['length']);
+            console.log(" - my length: " + input['contents'].length);
+            if(input['length'] == input['contents'].length) {
+                console.log("Success in reading input!");
+                if(input['type'].localeCompare('zonefile') == 0) {
+                    importJson(input['contents']);
+                }
+            }
+            
         }
         
         function onDisconnected(event) {
@@ -701,6 +743,32 @@ export default class MapPage extends Component {
              });
         }
         
+        function sendLargeString(buffer) {
+            if (!hereToThePiCharacteristic) {
+                return;
+              }
+            const max_size = 500;
+            
+            console.log('BLE> Sending large buffer to pi: ' + buffer.slice(0, max_size));
+            
+            let encoder = new TextEncoder('utf-8');
+            hereToThePiCharacteristic.writeValue(encoder.encode(buffer.slice(0, max_size)))
+            .then(_ => {
+                if( buffer.length > max_size) {
+                    sendLargeString(buffer.slice(max_size));
+                    console.log('BLE> Success! sending next data chunk...');
+                } else {
+                    console.log('BLE> Success! Complete!');
+                    console.log('BLE> Finalizing with uint8 (0)....!');
+                    hereToThePiCharacteristic.writeValue(new Uint8Array([0]));
+                }
+            })
+            .catch(error => {
+                console.log('BLE> Argh! ' + error);
+            });
+            
+        }
+        
         document.getElementById('c_btn').addEventListener('click', function () {
             sendToBlue("C");
         })
@@ -711,7 +779,40 @@ export default class MapPage extends Component {
             sendCirclesCommand("Gimme");
         })
         document.getElementById('sendcfg_btn').addEventListener('click', function () {
-            sendCirclesConfig("{example: 'data'}");
+           // sendCirclesConfig("{example: 'data'}");
+            //sendLargeString("hello input BLE!");
+            //sendLargeString(generate_config(data));
+            
+            // bad copy/paste:
+            fetch("/api/add-entry/", {
+                method: "POST",
+                body: JSON.stringify({
+                    vin: get_vin(),
+                    offset: get_offset(),
+                    regions: JSON.stringify(get_regions())
+                }),
+                headers: { "Content-Type": "application/json;" }
+            }).then(response => {
+                if (response.status != 201) {
+                    console.log("Bad request...");
+                }
+                else {
+                    return response.json();
+                }
+            }).then(res => {
+                if (res != undefined) {
+                    //send_email(res);
+                    var contents = JSON.stringify(generate_config(res))
+                    console.log("BLE> Sending config file Length: " + contents.length)
+                    var myJson = {
+                        type: "zonefile",
+                        contents: contents,
+                        length: contents.length
+                    }
+//                    sendLargeString(generate_config(res));
+                    sendLargeString(JSON.stringify(myJson));
+                }
+            });
         })
         document.getElementById('readcfg_btn').addEventListener('click', function () {
             //readCirclesConfig();
@@ -731,6 +832,8 @@ export default class MapPage extends Component {
             view: view
         });
     }
+    
+    
 
     //! switch to using material ui for buttons?
     render () {
