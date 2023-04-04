@@ -525,7 +525,18 @@ export default class MapPage extends Component {
                                         descriptors.map(c => c.uuid).join('\n' + ' '.repeat(19)));
                         });
                         
-                        
+                        console.log('BLE> getting characteristic 00000006-3d3d-3d3d-3d3d-3d3d3d3d3d3d...');
+                        service.getCharacteristic('00000006-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
+                        .then(characteristic => {
+                            console.log('BLE> Starting notifications...');
+                            characteristic.startNotifications().then(characteristic => {
+                                console.log('BLE> Adding eventListener...');
+                                characteristic.addEventListener('characteristicvaluechanged',
+                                                                handleNotificationCirclesStatusCharacteristic);
+                                console.log('BLE> Notifications have been started.');
+                            });
+                        });
+                              
                         console.log('BLE> getting characteristic 00000003-3d3d-3d3d-3d3d-3d3d3d3d3d3d...');
                         service.getCharacteristic('00000003-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
                         .then(characteristic => {
@@ -656,6 +667,14 @@ export default class MapPage extends Component {
             
 //            document.getElementById('id_cpu').value = utf8decoder.decode(value);
         }
+            
+            function  handleNotificationCirclesStatusCharacteristic(event) {
+                let value = event.target.value;
+                
+                let utf8decoder = new TextDecoder();
+                
+                document.getElementById('id_status').value = utf8decoder.decode(value);
+            }
         
         function handleCirclesInput(message) {
             var input = JSON.parse(message);
@@ -863,6 +882,7 @@ export default class MapPage extends Component {
                     <input type="button" value="Send Cmd" id="cmd_btn" className="form_section"/>
                     <input type="button" value="Send Config" id="sendcfg_btn" className="form_section"/>
                     <input type="button" value="Read Config" id="readcfg_btn" className="form_section"/>
+                    <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
 
 
                 </form>
