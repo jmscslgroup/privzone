@@ -285,7 +285,7 @@ export default class MapPage extends Component {
             //source.addPolygon(newCoordinates);
         });
         
-        function importJson(json) {
+        function importZoneFile(json) {
             var result = JSON.parse(json);
             var formatted = JSON.stringify(result, null, 2);
                 document.getElementById('id_parse').value = formatted;
@@ -337,7 +337,7 @@ export default class MapPage extends Component {
                     //console.log(e);
                     //console.log("JSON:");
                     console.log(e.target.result);
-                    importJson(e.target.result);
+                    importZoneFile(e.target.result);
                     //                var result = JSON.parse(e.target.result);
                     //                var formatted = JSON.stringify(result, null, 2);
                     //                    document.getElementById('id_parse').value = formatted;
@@ -488,9 +488,12 @@ export default class MapPage extends Component {
                 
                 device.addEventListener('gattserverdisconnected', onDisconnected);
                 device.addEventListener('advertisementreceived', onAdvertisementReceived);
+                
+                setStatus("Connecting...");
                 device.gatt.connect()
                 .then(server => {
                     console.log('BLE> Connected: ' + server.connected);
+                    setStatus("Connection Success!");
                     //server.getPrimaryServices().
                     //then( services => console.log('server.getPrimaryServices(): -> ' + services.getPrimaryServices()));
                     
@@ -625,13 +628,13 @@ export default class MapPage extends Component {
           // Convert raw data bytes to hex values just for the sake of showing something.
           // In the "real" world, you'd use data.getUint8, data.getUint16 or even
           // TextDecoder to process raw data bytes.
-          for (let i = 0; i < value.byteLength; i++) {
-            a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
-              a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
-          }
-          console.log('BLE> ' + a.join(' '));
+//          for (let i = 0; i < value.byteLength; i++) {
+//            a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
+//              a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
+//          }
+//          console.log('BLE> ' + a.join(' '));
             let utf8decoder = new TextDecoder();
-            console.log(utf8decoder.decode(value));
+            console.log('BLE> ' + utf8decoder.decode(value));
             
             document.getElementById('id_cpu').value = utf8decoder.decode(value);
         }
@@ -660,8 +663,8 @@ export default class MapPage extends Component {
                 
                 //console.log('BLE> CircleNotification: This was the final message: ' + finalMessage);
                 
-                console.log("BLE> Input received");
-//                importJson(finalMessage);
+                console.log("BLE> Input received: " + finalMessage);
+//                importZoneFile(finalMessage);
                 handleCirclesInput(finalMessage)
             }
             
@@ -673,28 +676,102 @@ export default class MapPage extends Component {
                 
                 let utf8decoder = new TextDecoder();
                 
-                document.getElementById('id_status').value = utf8decoder.decode(value);
+//                document.getElementById('id_status').value = utf8decoder.decode(value);
+                setStatus("Pi says: " + utf8decoder.decode(value));
             }
+        function setStatus(message) {
+            document.getElementById('id_status').value = message;
+        }
         
         function handleCirclesInput(message) {
-            var input = JSON.parse(message);
+            var input;
+            try {
+                input = JSON.parse(message);
+            } catch(e) {
+                setStatus("Error: Json parsing issue!")
+                console.log("Error: Json parsing issue!");
+                return;
+            }
+            if( !input.hasOwnProperty('type') ) {
+                setStatus("Error: Json missing 'type' key")
+                console.log("Error: Json missing 'type' key");
+                return;
+            }
             console.log("File type: " + input['type']);
-            //console.log("File contents: " + input['contents']);
+            
+            if( !input.hasOwnProperty('length') ) {
+                setStatus("Error: Json missing 'length' key")
+                console.log("Error: Json missing 'length' key");
+                return;
+            }
             console.log("File length:  " + input['length']);
+            
+            if( !input.hasOwnProperty('contents') ) {
+                setStatus("Error: Json missing 'contents' key")
+                console.log("Error: Json missing 'contents' key");
+                return;
+            }
+            //console.log("File contents: " + input['contents']);
             console.log(" - my length: " + input['contents'].length);
             if(input['length'] == input['contents'].length) {
                 console.log("Success in reading input!");
-                if(input['type'].localeCompare('zonefile') == 0) {
-                    importJson(input['contents']);
-                }
+//                if(input['type'].localeCompare('zonefile') == 0) {
+//                    importZoneFile(input['contents']);
+//                }
+                handleInputJson(input)
+            } else {
+                setStatus("Error: Json length mismatch!")
             }
             
+        }
+        
+        function handleInputJson(input) {
+            // The json object shoiuld be well formed at this point, no need to check length here
+            if(input['type'].localeCompare('zonefile') == 0) {
+                console.log("This is a zonefile!");
+                importZoneFile(input['contents']);
+            } else if(input['type'].localeCompare('wifi') == 0) {
+                
+                console.log("This is a wifi thing!");
+                importWifi(JSON.parse(input['contents']));
+            } else if(input['type'].localeCompare('wifi_scan') == 0) {
+                console.log("This is a wifi scan result!");
+                importWifiScan(JSON.parse(input['contents']));
+            }
+        }
+        
+        function importWifi(contents) {
+            console.log("Wifi contents: " + JSON.stringify(contents) )
+            
+            document.getElementById('id_wifi').value = contents['current'];
+            
+            document.getElementById('id_wifi_aps').options.length = 0;
+            //            for( ap of contents['configured']) {
+            contents['configured'].forEach(ap => {
+                document.getElementById('id_wifi_aps').append(new Option(ap, ap));
+                
+//                var length=document.getElementById('id_wifi_aps').options.length
+//                document.getElementById('id_wifi_aps').options[length] = new Option( ap, length )
+                //                document.getElementById(id).selectedIndex = length;
+            })
+        }
+        
+        function importWifiScan(contents) {
+            document.getElementById('id_wifi_scan_aps').options.length = 0;
+            contents['scan_result'].forEach(ap => {
+                document.getElementById('id_wifi_scan_aps').append(new Option(ap, ap));
+                
+//                var length=document.getElementById('id_wifi_aps').options.length
+//                document.getElementById('id_wifi_aps').options[length] = new Option( ap, length )
+                //                document.getElementById(id).selectedIndex = length;
+            })
         }
         
         function onDisconnected(event) {
           // Object event.target is Bluetooth Device getting disconnected.
           myCharacteristic = null;
           console.log('BLE> Bluetooth Device disconnected');
+          setStatus("Disconnected, try reconnecting");
         }
         
         function onAvailabiltyChanged(event) {
@@ -721,13 +798,14 @@ export default class MapPage extends Component {
               }
             let encoder = new TextEncoder('utf-8');
 //             let value = "C";
-            console.log('BLE> Setting Command Characteristic User Description...');
+            console.log('BLE> Setting Command: ' + value);
             myCommandCharacteristic.writeValue(encoder.encode(value))
              .then(_ => {
                console.log('BLE> Command Characteristic User Description changed to: ' + value);
              })
              .catch(error => {
                  console.log('BLE> Argh! ' + error);
+                 setStatus("Error occured, try reconnecting: " + error);
              });
         }
         
@@ -744,6 +822,7 @@ export default class MapPage extends Component {
              })
              .catch(error => {
                  console.log('BLE> Argh! ' + error);
+                 setStatus("Error occured, try reconnecting: " + error);
              });
         }
         function sendCirclesConfig(value) {
@@ -759,6 +838,7 @@ export default class MapPage extends Component {
              })
              .catch(error => {
                  console.log('BLE> Argh! ' + error);
+                 setStatus("Error occured, try reconnecting: " + error);
              });
         }
         
@@ -784,6 +864,7 @@ export default class MapPage extends Component {
             })
             .catch(error => {
                 console.log('BLE> Argh! ' + error);
+                setStatus("Error occured, try reconnecting: " + error);
             });
             
         }
@@ -794,8 +875,11 @@ export default class MapPage extends Component {
         document.getElementById('f_btn').addEventListener('click', function () {
             sendToBlue("F");
         })
-        document.getElementById('cmd_btn').addEventListener('click', function () {
-            sendCirclesCommand("Gimme");
+        document.getElementById('cmd_wifi_btn').addEventListener('click', function () {
+            sendCirclesCommand("W");
+        })
+        document.getElementById('cmd_wifi_scan_btn').addEventListener('click', function () {
+            sendCirclesCommand("S");
         })
         document.getElementById('sendcfg_btn').addEventListener('click', function () {
            // sendCirclesConfig("{example: 'data'}");
@@ -875,15 +959,46 @@ export default class MapPage extends Component {
                     <input type="file" id="selectedFile" />
                     <input type="button" value="Import" id="import_btn" className="form_section"/>
                     <input type="id_input" placeholder="Parsed" id="id_parse" className="form_section" />
-                    <input type="button" value="Blue" id="blue_btn" className="form_section"/>
+                
+                    <br/>
+                <h4>Status:</h4>
+                    <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
+                    <input type="button" value="Connect" id="blue_btn" className="form_section"/>
+                    <br/>
+                <h4>Pi Temperature:</h4>
                     <input type="id_input" placeholder="CPU Temp" id="id_cpu" className="form_section" />
                     <input type="button" value="Set C" id="c_btn" className="form_section"/>
                     <input type="button" value="Set F" id="f_btn" className="form_section"/>
-                    <input type="button" value="Send Cmd" id="cmd_btn" className="form_section"/>
-                    <input type="button" value="Send Config" id="sendcfg_btn" className="form_section"/>
-                    <input type="button" value="Read Config" id="readcfg_btn" className="form_section"/>
-                    <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
-
+                
+                    <br/>
+                    <h4>Zone File Transfer:</h4>
+                    <div class="row">
+                        <div class="column">
+                            <input type="button" value="Send Zone" id="sendcfg_btn" className="form_section"/>
+                        </div>
+                        <div class="column">
+                            <input type="button" value="Read Zone" id="readcfg_btn" className="form_section"/>
+                        </div>
+                    </div>
+                    <br/>
+                <h4>Wifi:</h4>
+                    <input type="label" placeholder="Current Wifi" id="id_wifi" className="form_section" />
+                
+                    <div class="row">
+                        <div class="column">
+                            <input type="button" value="Read Wifi" id="cmd_wifi_btn" className="form_section"/>
+                            <select id="id_wifi_aps" className="form_section">
+                                <option value="None">None</option>
+                            </select>
+                        </div>
+                        <div class="column">
+                            <input type="button" value="Scan Wifi" id="cmd_wifi_scan_btn" className="form_section"/>
+                            <select id="id_wifi_scan_aps" className="form_section">
+                                    <option value="None">None</option>
+                            </select>
+                        </div>
+                    </div>
+                
 
                 </form>
                 <p id="id-text-box"></p>
