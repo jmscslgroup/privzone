@@ -68,7 +68,7 @@ export default class MapPage extends Component {
             view.setResolution(2.388657133911758);
         });
 
-        var typeSelect = document.getElementById('type');
+        var typeSelect = document.getElementById('id_shape');
 
         // current object being placed
         //var draw;
@@ -881,6 +881,25 @@ export default class MapPage extends Component {
         document.getElementById('cmd_wifi_scan_btn').addEventListener('click', function () {
             sendCirclesCommand("S");
         })
+        document.getElementById('cfg_wifi_btn').addEventListener('click', function () {
+            console.log('Configuring wifi AP: ' + document.getElementById('id_wifi_scan_aps').value);
+            
+            document.getElementById('id_wifi_psk').value;
+            
+            var contents = JSON.stringify({
+                ssid: document.getElementById('id_wifi_scan_aps').value,
+                psk: document.getElementById('id_wifi_psk').value
+            })
+            
+            var data = {
+                type: 'wifi_add',
+                contents: contents,
+                length: contents.length
+            }
+            
+            sendLargeString(JSON.stringify(data));
+            
+        })
         document.getElementById('sendcfg_btn').addEventListener('click', function () {
            // sendCirclesConfig("{example: 'data'}");
             //sendLargeString("hello input BLE!");
@@ -944,14 +963,14 @@ export default class MapPage extends Component {
         <div className="container">
             <div className="map" id="map"></div>
             <div className="sidebar">
-                <form id="type_form"> 
-                    <select id="type" className="form_section">
+                <form id="id_form">
+                    <select id="id_shape" className="form_section">
                         <option value="Circle">Circle</option>
                         <option value="Polygon">Polygon</option>
                     </select>
                     <input type="button" value="Reset" id="reset_btn" className="form_section" />
                 </form>
-                <form id="id_form">
+                <form id="id_form_2">
                     <input type="id_input" placeholder="Enter VIN" maxLength="17" id="id_input" className="form_section" />
                     <input type="id_input" placeholder="Offset in Meters" id="id_offset" className="form_section" />
                     <input type="button" value="Send" id="send_btn" className="form_section"/>
@@ -960,42 +979,48 @@ export default class MapPage extends Component {
                     <input type="button" value="Import" id="import_btn" className="form_section"/>
                     <input type="id_input" placeholder="Parsed" id="id_parse" className="form_section" />
                 
-                    <br/>
-                <h4>Status:</h4>
+                
+                </form>
+                <form id="id_form_status">
+                    Status:
                     <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
                     <input type="button" value="Connect" id="blue_btn" className="form_section"/>
-                    <br/>
+
+                
+                </form>
+                <form id="id_form_temperature">
                 <h4>Pi Temperature:</h4>
                     <input type="id_input" placeholder="CPU Temp" id="id_cpu" className="form_section" />
                     <input type="button" value="Set C" id="c_btn" className="form_section"/>
                     <input type="button" value="Set F" id="f_btn" className="form_section"/>
-                
-                    <br/>
+
                     <h4>Zone File Transfer:</h4>
-                    <div class="row">
-                        <div class="column">
+                    <div className="row">
+                        <div className="column">
                             <input type="button" value="Send Zone" id="sendcfg_btn" className="form_section"/>
                         </div>
-                        <div class="column">
+                        <div className="column">
                             <input type="button" value="Read Zone" id="readcfg_btn" className="form_section"/>
                         </div>
                     </div>
-                    <br/>
-                <h4>Wifi:</h4>
+                
+                </form>
+                <form id="id_form_wifi">
+                    <h4>Wifi:</h4>
                     <input type="label" placeholder="Current Wifi" id="id_wifi" className="form_section" />
                 
-                    <div class="row">
-                        <div class="column">
+                    <div className="row">
+                        <div className="column">
                             <input type="button" value="Read Wifi" id="cmd_wifi_btn" className="form_section"/>
                             <select id="id_wifi_aps" className="form_section">
-                                <option value="None">None</option>
                             </select>
                         </div>
-                        <div class="column">
+                        <div className="column">
                             <input type="button" value="Scan Wifi" id="cmd_wifi_scan_btn" className="form_section"/>
                             <select id="id_wifi_scan_aps" className="form_section">
-                                    <option value="None">None</option>
                             </select>
+                            <input type="button" value="Configure" id="cfg_wifi_btn" className="form_section"/>
+                            <input type="password" placeholder="Passkey" id="id_wifi_psk" className="form_section" />
                         </div>
                     </div>
                 
