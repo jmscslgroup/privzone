@@ -900,6 +900,20 @@ export default class MapPage extends Component {
             sendLargeString(JSON.stringify(data));
             
         })
+        document.getElementById('del_wifi_btn').addEventListener('click', function () {
+            console.log('Deleting wifi AP: ' + document.getElementById('id_wifi_aps').value);
+            
+            var contents = JSON.stringify({
+                ssid: document.getElementById('id_wifi_aps').value
+            })
+            var data = {
+                type: 'wifi_remove',
+                contents: contents,
+                length: contents.length
+            }
+            
+            sendLargeString(JSON.stringify(data));
+        })
         document.getElementById('sendcfg_btn').addEventListener('click', function () {
            // sendCirclesConfig("{example: 'data'}");
             //sendLargeString("hello input BLE!");
@@ -1014,6 +1028,7 @@ export default class MapPage extends Component {
                             <input type="button" value="Read Wifi" id="cmd_wifi_btn" className="form_section"/>
                             <select id="id_wifi_aps" className="form_section">
                             </select>
+                            <input type="button" value="Delete" id="del_wifi_btn" className="form_section"/>
                         </div>
                         <div className="column">
                             <input type="button" value="Scan Wifi" id="cmd_wifi_scan_btn" className="form_section"/>
