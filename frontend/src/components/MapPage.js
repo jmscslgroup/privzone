@@ -671,14 +671,21 @@ export default class MapPage extends Component {
 //            document.getElementById('id_cpu').value = utf8decoder.decode(value);
         }
             
-            function  handleNotificationCirclesStatusCharacteristic(event) {
-                let value = event.target.value;
-                
-                let utf8decoder = new TextDecoder();
-                
-//                document.getElementById('id_status').value = utf8decoder.decode(value);
-                setStatus("Pi says: " + utf8decoder.decode(value));
+        function  handleNotificationCirclesStatusCharacteristic(event) {
+            let value = event.target.value;
+            
+            let utf8decoder = new TextDecoder();
+            
+            var message = utf8decoder.decode(value);
+            //                document.getElementById('id_status').value = utf8decoder.decode(value);
+            setStatus("Pi says: " + message);
+            
+            if(message.localeCompare("Wifi removed!") == 0) {
+                console.log("Wifi was removed, refreshing connections...");
+                sendCirclesCommand("W");
             }
+            
+        }
         function setStatus(message) {
             document.getElementById('id_status').value = message;
         }
