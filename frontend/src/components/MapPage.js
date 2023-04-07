@@ -967,6 +967,12 @@ export default class MapPage extends Component {
             vector: vector,
             view: view
         });
+        
+        
+        
+        document.getElementById('id_tab').addEventListener('click', function () {
+            console.log('Click! ' + document.getElementById('id_tab').value)
+        })
     }
     
     
@@ -1002,6 +1008,11 @@ export default class MapPage extends Component {
 
                 
                 </form>
+                <div className="tab" id="id_tab">
+                    <button className="tablinks" value="London">London</button>
+                    <button className="tablinks">Two</button>
+                </div>
+                
                 <form id="id_form_temperature">
                 <h4>Pi Temperature:</h4>
                     <input type="id_input" placeholder="CPU Temp" id="id_cpu" className="form_section" />
