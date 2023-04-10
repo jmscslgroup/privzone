@@ -680,8 +680,9 @@ export default class MapPage extends Component {
             //                document.getElementById('id_status').value = utf8decoder.decode(value);
             setStatus("Pi says: " + message);
             
-            if(message.localeCompare("Wifi removed!") == 0) {
-                console.log("Wifi was removed, refreshing connections...");
+            if(message.localeCompare("Wifi removed!") == 0 ||
+               message.localeCompare("Wifi complete!") == 0) {
+                console.log("Wifi updated, refreshing configurations...");
                 sendCirclesCommand("W");
             }
             
