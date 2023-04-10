@@ -191,7 +191,12 @@ export default class MapPage extends Component {
                 vin: vin,
                 offset: offset,
                 regions: regions,
-                created_at: created_at
+                created_at: created_at,
+                view: {
+                    zoom: view.getZoom(),
+//                    extent: map.view.extent,
+                    center: view.getCenter()
+                }
             };
         }
 
@@ -298,6 +303,11 @@ export default class MapPage extends Component {
                   console.log(`- region ${i} is type ${regions[i]['type']}`);
                   addRegion(regions[i]);
               }
+            
+            if(result.hasOwnProperty('view')) {
+                view.setZoom(result['view']['zoom']);
+                view.setCenter(result['view']['center']);
+            }
               
               document.getElementById('id_input').value = result['vin'];
               document.getElementById('id_offset').value = result['offset'];
