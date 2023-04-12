@@ -32,6 +32,7 @@ export default class MapPage extends Component {
 
     // component did mount is not running???
     componentDidMount() {
+        
 
         var raster = new TileLayer({
             source: new OSM(),
@@ -221,7 +222,7 @@ export default class MapPage extends Component {
         function reset() {
             draw.removeLastPoint();
             source.refresh();
-            document.getElementById('send_btn').disabled = true;
+//            document.getElementById('send_btn').disabled = true;
             var node = document.getElementById('id-text-box');
             node.innerText = "";
             node = document.getElementById('coord-text-box');
@@ -239,11 +240,23 @@ export default class MapPage extends Component {
             var elm = document.getElementById('id_offset');
             return elm.value;
         }
+        
+        
+        const hysteresisColor = 'red';  // HACK!  this is a major hack to check for hysteresis boundaries during export
 
         function get_regions() {
             var regions = [];
             source.getFeatures().forEach((element, i) => {
+                if( element.getStyle() ) {  // HACK HACK HACK!  Checking the color to determine if hysteresis is not my proudest moment
+//                    console.log("STYLE! " + JSON.stringify(element.getStyle()) );
+//                    console.log("COLOR! " + element.getStyle().getStroke().getColor() );
+                    if( element.getStyle().getStroke().getColor().localeCompare(hysteresisColor) == 0) {
+                        console.log("This is a hysteresis boundary!  skipping...");
+                        return;
+                    }
+                }
                 switch(element.getGeometry().getType()) {
+                        
                     case "Circle":
                         var geo = element.getGeometry();
                         var center = toLonLat(geo.getCenter());
@@ -256,7 +269,11 @@ export default class MapPage extends Component {
                             }
                         });
                     break;
-                    case "Polygon": 
+                    case "Polygon":
+//                        if ( element.getStyle() ) {
+//
+//                        }
+                        
                         var coords = element.getGeometry().getCoordinates()[0];
                         var final = [];
                         coords.forEach(e => {
@@ -378,7 +395,7 @@ export default class MapPage extends Component {
             
 //            featureone.setStyle(new Style({
 //                fill: new Fill({
-//                  color: 'red'
+//                  color: hysteresisColor
 //                })
 //              }))
             
@@ -486,12 +503,12 @@ export default class MapPage extends Component {
                 var featureone = new Feature(circleone);
                 if(hysteresis) {
 //                    var style = featureone.getStyle();
-//                    style.fill.color = 'red';
+//                    style.fill.color = hysteresisColor;
 //                    featureone.setStyle(style);
                     featureone.setStyle(new Style({
                         stroke: new Stroke({
                        // lineDash: 1,
-                        color: 'red'
+                        color: hysteresisColor,
                     })
                     }))
                     
@@ -512,12 +529,12 @@ export default class MapPage extends Component {
                 
                 if(hysteresis) {
 //                    var style = featureone.getStyle();
-//                    style.fill.color = 'red';
+//                    style.fill.color = hysteresisColor;
 //                    featureone.setStyle(style);
                     featureone.setStyle(new Style({
                         stroke: new Stroke({
                        // lineDash: 1,
-                        color: 'red'
+                        color: hysteresisColor
                     })
                     }))
                     
