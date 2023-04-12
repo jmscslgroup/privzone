@@ -400,11 +400,13 @@ export default class MapPage extends Component {
 //              }))
             
             source.addFeature(featureone);
-            console.log("iefhoiadfh");
+//            console.log("iefhoiadfh");
             //source.addPolygon(newCoordinates);
         });
         
         function importZoneFile(json) {
+            reset();    // Not very great to have it here, but prevents doulbe importing
+            
             var result = JSON.parse(json);
             var formatted = JSON.stringify(result, null, 2);
                 document.getElementById('id_parse').value = formatted;
@@ -875,7 +877,7 @@ export default class MapPage extends Component {
         function importWifi(contents) {
             console.log("Wifi contents: " + JSON.stringify(contents) )
             
-            document.getElementById('id_wifi').value = contents['current'];
+            document.getElementById('id_wifi').value = contents['current'] + " " + contents['wlan0']['IP'];
             
             document.getElementById('id_wifi_aps').options.length = 0;
             //            for( ap of contents['configured']) {
