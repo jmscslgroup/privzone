@@ -7,6 +7,10 @@ import {Modify, Snap} from 'ol/interaction.js';
 import Polygon from 'ol/geom/Polygon.js';
 import Circle from 'ol/geom/Circle.js';
 import Point from 'ol/geom/Point.js';
+import GeometryCollection from 'ol/geom/GeometryCollection.js';
+import {circular} from 'ol/geom/Polygon.js';
+import {getDistance} from 'ol/sphere.js';
+import {transform} from 'ol/proj.js';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import {toLonLat,fromLonLat} from 'ol/proj';
@@ -18,6 +22,7 @@ import {
     Stroke,
     Style
 } from 'ol/style.js';
+
 
 export default class MapPage extends Component {
     
@@ -52,7 +57,73 @@ export default class MapPage extends Component {
             view: view,
         });
         
-        const modify = new Modify({source: source});
+//        const modify = new Modify({source: source});
+        const defaultStyle = new Modify({source: source})
+          .getOverlay()
+          .getStyleFunction();
+        
+        const modify = new Modify({
+          source: source,
+          style: function (feature) {
+            feature.get('features').forEach(function (modifyFeature) {
+              const modifyGeometry = modifyFeature.get('modifyGeometry');
+              if (modifyGeometry) {
+                const modifyPoint = feature.getGeometry().getCoordinates();
+                const geometries = modifyFeature.getGeometry().getGeometries();
+                const polygon = geometries[0].getCoordinates()[0];
+                const center = geometries[1].getCoordinates();
+                const projection = map.getView().getProjection();
+                let first, last, radius;
+                if (modifyPoint[0] === center[0] && modifyPoint[1] === center[1]) {
+                  // center is being modified
+                  // get unchanged radius from diameter between polygon vertices
+                  first = transform(polygon[0], projection, 'EPSG:4326');
+                  last = transform(
+                    polygon[(polygon.length - 1) / 2],
+                    projection,
+                    'EPSG:4326'
+                  );
+                  radius = getDistance(first, last) / 2;
+                } else {
+                  // radius is being modified
+                  first = transform(center, projection, 'EPSG:4326');
+                  last = transform(modifyPoint, projection, 'EPSG:4326');
+                  radius = getDistance(first, last);
+                }
+                // update the polygon using new center or radius
+                const circle = circular(
+                  transform(center, projection, 'EPSG:4326'),
+                  radius,
+                  128
+                );
+                circle.transform('EPSG:4326', projection);
+                geometries[0].setCoordinates(circle.getCoordinates());
+                // save changes to be applied at the end of the interaction
+                modifyGeometry.setGeometries(geometries);
+              }
+            });
+            return defaultStyle(feature);
+          },
+        });
+
+        modify.on('modifystart', function (event) {
+          event.features.forEach(function (feature) {
+            const geometry = feature.getGeometry();
+            if (geometry.getType() === 'GeometryCollection') {
+              feature.set('modifyGeometry', geometry.clone(), true);
+            }
+          });
+        });
+
+        modify.on('modifyend', function (event) {
+          event.features.forEach(function (feature) {
+            const modifyGeometry = feature.get('modifyGeometry');
+            if (modifyGeometry) {
+              feature.setGeometry(modifyGeometry);
+              feature.unset('modifyGeometry', true);
+            }
+          });
+        });
         map.addInteraction(modify);
         
         let draw, snap; // global so we can remove them later
@@ -70,19 +141,45 @@ export default class MapPage extends Component {
 
         var typeSelect = document.getElementById('id_shape');
 
+        
+        // See: https://openlayers.org/en/latest/examples/draw-and-modify-geodesic.html
         // current object being placed
         //var draw;
-        function addInteraction() {
+        function addInteractions() {
             var value = typeSelect.value;
-            if (value !== 'None') {
-                draw = new Draw({
-                source: source, // where the drawing occurs
-                type: typeSelect.value,
-                });
-                map.addInteraction(draw); // create new drawing on mouse
-                snap = new Snap({source: source});
-                map.addInteraction(snap);
+            let geometryFunction;
+            if(value === 'Geodesic') {
+                value = 'Circle';
+                geometryFunction = function (coordinates, geometry, projection) {
+                    if (!geometry) {
+                        geometry = new GeometryCollection([
+                            new Polygon([]),
+                            new Point(coordinates[0]),
+                        ]);
+                    }
+                    console.log('GeometrY: ' + geometry);
+                    const geometries = geometry.getGeometries();
+                    const center = transform(coordinates[0], projection, 'EPSG:4326');
+                    const last = transform(coordinates[1], projection, 'EPSG:4326');
+                    const radius = getDistance(center, last);
+                    const circle = circular(center, radius, 128);
+                    circle.transform('EPSG:4326', projection);
+                    geometries[0].setCoordinates(circle.getCoordinates());
+                    geometry.setGeometries(geometries);
+                    return geometry;
+                };
             }
+            
+//            if (value !== 'None') {
+                draw = new Draw({
+                    source: source, // where the drawing occurs
+                    type: value,
+                    geometryFunction: geometryFunction
+                });
+//            }
+            map.addInteraction(draw); // create new drawing on mouse
+            snap = new Snap({source: source});
+            map.addInteraction(snap);
         }
 
         // update coordinates when the source changes
@@ -112,7 +209,7 @@ export default class MapPage extends Component {
             // check the new type and do stuff
 //            addInteraction();
             map.removeInteraction(snap);
-            addInteraction();
+            addInteractions();
         };
 
         // soft reset (remove last drawn point)
@@ -408,7 +505,7 @@ export default class MapPage extends Component {
                     coords.push(fromLonLat(region['data'][i]));
                 }
                 //            coords.push(fromLonLat([0, 0]));
-                coords.push(coords[0].slice());
+                //coords.push(coords[0].slice());
                 
                 var polyone = new Polygon([coords]);
                 var featureone = new Feature(polyone);
@@ -972,9 +1069,15 @@ export default class MapPage extends Component {
             //readCirclesConfig();
             sendCirclesCommand("R");
         })
-
+        
+        
+        document.getElementById('read_processed_btn').addEventListener('click', function () {
+            //readCirclesConfig();
+            sendCirclesCommand("P");
+        })
+        
         // add interaction when loaded, so drawing can start instantly
-        addInteraction();
+        addInteractions();
         
 
         // save map and layer references to local state
@@ -1005,6 +1108,7 @@ export default class MapPage extends Component {
                     <select id="id_shape" className="form_section">
                         <option value="Circle">Circle</option>
                         <option value="Polygon">Polygon</option>
+                        <option value="Geodesic">Geodesic</option>
                     </select>
                     <input type="button" value="Reset" id="reset_btn" className="form_section" />
                 </form>
@@ -1044,6 +1148,7 @@ export default class MapPage extends Component {
                         </div>
                         <div className="column">
                             <input type="button" value="Read Zone" id="readcfg_btn" className="form_section"/>
+                            <input type="button" value="Read Processed" id="read_processed_btn" className="form_section"/>
                         </div>
                     </div>
                 
