@@ -5,3 +5,6 @@ django-extensions
 Werkzeug
 pyOpenSSL
 psycopg2-binary
+bootstrap
+react-bootstrap
+bootstrap@5.1.3

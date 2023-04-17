@@ -24,6 +24,22 @@ import {
 } from 'ol/style.js';
 
 
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.js";
+//import Navbar from "./../Navigation/Navbar.js";
+
+//import './../index.css';
+
+//class CustomButton extends React.Component {
+//    render() {
+//        return <CustomButton /> ; // props.color will be set to blue
+//      }
+//}
+//
+//CustomButton.defaultProps = {
+//  color: 'blue'
+//};
+
 export default class MapPage extends Component {
     
     constructor(params) {
@@ -781,7 +797,7 @@ export default class MapPage extends Component {
             let utf8decoder = new TextDecoder();
             buffer = buffer.concat(utf8decoder.decode(value));
             //console.log('BLE> CircleNotification: ' + utf8decoder.decode(value));
-            //console.log('BLE> CircleNotification: num bytes: ' + value.byteLength + ' final char: ' + value.getUint8(value.byteLength-1));
+            console.log('BLE> CircleNotification: num bytes: ' + value.byteLength + ' final char: ' + value.getUint8(value.byteLength-1));
             if(value.getUint8(value.byteLength-1) == 0) {
                 
                 finalMessage = buffer.slice(0,buffer.length-1);
@@ -878,6 +894,46 @@ export default class MapPage extends Component {
             console.log("Wifi contents: " + JSON.stringify(contents) )
             
             document.getElementById('id_wifi').value = contents['current'] + " " + contents['wlan0']['IP'];
+            
+            let ifaces = {
+                'wlan0': contents['wlan0'],
+                'eth0': contents['eth0'],
+                'lo': contents['lo']
+            };
+            if ('eth1' in contents) {
+                ifaces['eth1'] = contents['eth1'];
+            }
+            
+            var myTable = document.getElementById('id_iface_table');
+            var tableRows = myTable.getElementsByTagName('tr');
+            var rowCount = tableRows.length;
+            for( var i = rowCount-1; i > 0; i--) {
+//                myTable.deleteRow(i);
+                myTable.removeChild(tableRows[i]);
+            }
+//            ifaces.forEach( iface => {
+            for( const iface in ifaces ) {
+                var rowNode = document.createElement("tr");
+                var cellNode = document.createElement("td");
+//                let row = myTable.insertRow();
+//                let face = row.insertCell(0);
+//                face.innerText = iface;
+                var textNode = document.createTextNode(iface);
+                cellNode.appendChild(textNode);
+                rowNode.appendChild(cellNode);
+                
+                
+                
+                cellNode = document.createElement("td");
+//                let ip = ip.insertCell(0);
+//                ip.innerText = ifaces[iface]['IP'];
+                textNode = document.createTextNode(ifaces[iface]['IP']);
+                cellNode.appendChild(textNode);
+                rowNode.appendChild(cellNode);
+                
+                
+                myTable.appendChild(rowNode);
+            }
             
             document.getElementById('id_wifi_aps').options.length = 0;
             //            for( ap of contents['configured']) {
@@ -1110,57 +1166,165 @@ export default class MapPage extends Component {
         
         
         
-        document.getElementById('id_tab').addEventListener('click', function () {
-            console.log('Click! ' + document.getElementById('id_tab').value)
+//        document.getElementById('id_nav').addEventListener('click', function () {
+//            console.log('Click! ' + document.getElementById('id_nav').value);
+////
+////            //document.getElementById('id_form_2').hidden = true;
+////        })
+////        document.getElementById('id_two').addEventListener('click', function () {
+////            console.log('Click Two! ' + document.getElementById('id_tab').value)
+//        })
+        
+        var formZone = document.getElementById('id_form_zone');
+        var formInternet = document.getElementById('id_form_internet');
+        var formDebug = document.getElementById('id_form_debug');
+        
+        var formElements = [
+            formZone,
+            formInternet,
+            formDebug
+                           ];
+        
+        
+        
+        function setFormCurrent( formElement ) {
+            formElements.forEach( function (element) {
+                    element.hidden = true;
+            });
+            formElement.hidden = false;
+        }
+        
+        document.getElementById('id_navbar').addEventListener('click', function () {
+            var navbar = document.getElementById('id_navbar');
+            console.log('Click! Navbar' + navbar);
+            console.log('Click! Navbar' + this.children);
+//            $(".nav").find(".active").removeClass("active");
+//            $(this).addClass("active");
+            
+            
+        })
+        document.getElementById('id_nav_zone').addEventListener('click', function () {
+            console.log('Click zone! ');
+            
+//            var form = document.getEl?n;
+            
+            setFormCurrent( formZone );
+        })
+        
+        document.getElementById('id_nav_internet').addEventListener('click', function () {
+            console.log('Click internet');
+            
+//            var form = document.getEl?n;
+            
+            setFormCurrent( formInternet );
+        })
+        
+        document.getElementById('id_nav_debug').addEventListener('click', function () {
+            console.log('Click internet');
+            
+//            var form = document.getEl?n;
+            
+            setFormCurrent( formDebug );
         })
     }
     
     
-
+//                <div className="tab" id="id_tab">
+//                    <button className="tablinks" value="London">London</button>
+//                    <button className="tablinks">Two</button>
+//                </div>
+    
+    
+//    <div className="row">
+//        <div>
+//            <input type="button" value="Debug" id="id_nav_debug" className="form_section" />
+//            <input type="button" value="Connect" id="id_nav_connect" className="form_section" />
+//        </div>
+//    </div>
+//    </form>
     //! switch to using material ui for buttons?
     render () {
         return (
+                
         <div className="container">
+                
+                <nav className="navbar navbar-expand-lg navbar-dark bg-dark" id="id_navbar">
+                  <a className="navbar-brand" href="#">Privzone</a>
+                  <button
+                    className="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                  >
+                    <span className="navbar-toggler-icon"></span>
+                  </button>
+
+                  <div className="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul className="navbar-nav">
+                      <li className="nav-item active">
+                        <a className="nav-link" href="#" id="id_nav_zone">Zones</a></li>
+                      <li className="nav-item">
+                        <a className="nav-link" id="id_nav_internet" href="#">Internet</a>
+                      </li>
+                    <li className="nav-item">
+                        <a className="nav-link" id="id_nav_debug" href="#">Debug</a>
+                    </li>
+                      <li className="nav-item dropdown">
+                        <a className="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Dropdown
+                        </a>
+                        <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <a className="dropdown-item" href="#">Action</a>
+                          <a className="dropdown-item" href="#">Another action</a>
+                          <div className="dropdown-divider"></div>
+                          <a className="dropdown-item" href="#">Something else here</a>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </nav>
+                
+                
             <div className="map" id="map"></div>
             <div className="sidebar">
-                <form id="id_form">
+
+                <form id="id_form_zone">
                     <select id="id_shape" className="form_section">
                         <option value="Circle">Circle</option>
                         <option value="Polygon">Polygon</option>
                         <option value="Geodesic">Geodesic</option>
                     </select>
                     <input type="button" value="Reset" id="reset_btn" className="form_section" />
-                </form>
-                <form id="id_form_2">
-                    <input type="id_input" placeholder="Enter VIN" maxLength="17" id="id_input" className="form_section" />
                     <input type="id_input" placeholder="Offset in Meters" id="id_offset" className="form_section" />
-                    <input type="button" value="Send" id="send_btn" className="form_section"/>
-                    <input type="button" value="Fake Poly" id="fake_btn" className="form_section"/>
+                    <input type="button" value="Email" id="send_btn" className="form_section"/>
+ 
+                    <input type="id_input" placeholder="Enter VIN" maxLength="17" id="id_input" className="form_section" />
                     <input type="file" id="selectedFile" />
                     <input type="button" value="Import" id="import_btn" className="form_section"/>
-                    <input type="id_input" placeholder="Parsed" id="id_parse" className="form_section" />
                 
                 
                 </form>
-                <form id="id_form_status">
-                    Status:
-                    <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
-                    <input type="button" value="Connect" id="blue_btn" className="form_section"/>
-
                 
-                </form>
-                <div className="tab" id="id_tab">
-                    <button className="tablinks" value="London">London</button>
-                    <button className="tablinks">Two</button>
-                </div>
-                
-                <form id="id_form_temperature">
+                <form id="id_form_debug">
+                <input type="button" value="Fake Poly" id="fake_btn" className="form_section"/>
+                <input type="id_input" placeholder="Parsed" id="id_parse" className="form_section" />
                 <h4>Pi Temperature:</h4>
                     <input type="id_input" placeholder="CPU Temp" id="id_cpu" className="form_section" />
                     <input type="button" value="Set C" id="c_btn" className="form_section"/>
                     <input type="button" value="Set F" id="f_btn" className="form_section"/>
 
-                    <h4>Zone File Transfer:</h4>
+                </form>
+                
+                <form id="id_form_bluetooth">
+                
+                <h4>Status:</h4>
+                    <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
+                    <input type="button" value="Connect" id="blue_btn" className="form_section"/>
+                
+                <h4>Zone File Transfer:</h4>
                     <div className="row">
                         <div className="column">
                             <input type="button" value="Send Zone" id="sendcfg_btn" className="form_section"/>
@@ -1172,24 +1336,42 @@ export default class MapPage extends Component {
                     </div>
                 
                 </form>
-                <form id="id_form_wifi">
+                
+                
+                
+                <form id="id_form_internet">
                     <h4>Wifi:</h4>
                     <input type="label" placeholder="Current Wifi" id="id_wifi" className="form_section" />
                 
                     <div className="row">
+                        <div>
                         <div className="column">
-                            <input type="button" value="Read Wifi" id="cmd_wifi_btn" className="form_section"/>
+                            <input type="button" value="Read Config" id="cmd_wifi_btn" className="form_section"/>
                             <select id="id_wifi_aps" className="form_section">
                             </select>
                             <input type="button" value="Delete" id="del_wifi_btn" className="form_section"/>
                         </div>
+                        </div>
+                
+                        <div>
                         <div className="column">
                             <input type="button" value="Scan Wifi" id="cmd_wifi_scan_btn" className="form_section"/>
                             <select id="id_wifi_scan_aps" className="form_section">
                             </select>
-                            <input type="button" value="Configure" id="cfg_wifi_btn" className="form_section"/>
+                            <input type="button" value="Add" id="cfg_wifi_btn" className="form_section"/>
                             <input type="password" placeholder="Passkey" id="id_wifi_psk" className="form_section" />
                         </div>
+                        </div>
+                
+                    <div>
+                        <div className="table" id="id_iface_table">
+                        
+                <tr>
+                  <th>iface</th>
+                  <th>IP</th>
+                </tr>
+                        </div>
+                    </div>
                     </div>
                 
 
@@ -1198,7 +1380,7 @@ export default class MapPage extends Component {
                 <p id="coord-text-box"></p>
                 <p id="test_send_btn"></p>
             </div>
-        </div>
+                </div>
     );
     }
 }
