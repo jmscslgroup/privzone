@@ -612,7 +612,7 @@ export default class MapPage extends Component {
             
              // options.acceptAllDevices = true;
 //            options.filters = [ {name: "circles"} ];
-            options.filters = [ {services: ['00000001-3d3d-3d3d-3d3d-3d3d3d3d3d3d'] } ];
+            options.filters = [ {services: ['00000001-4d3d-3d3d-3d3d-3d3d3d3d3d3d'] } ];
 //            options.filters = [ {services: ["00000001-710E-4A5B-8D75-3E5B444B3C3F"] } ];
              // optionalServices: [] // Required to access service later.
 //            options.optionalServices = [ '00000001-710e-4a5b-8d75-3e5b444bc3cf' ];
@@ -640,7 +640,7 @@ export default class MapPage extends Component {
                     //then( services => console.log('server.getPrimaryServices(): -> ' + services.getPrimaryServices()));
                     
 //                    server.getPrimaryService('00000001-710e-4a5b-8d75-3e5b444bc3cf')
-                    server.getPrimaryService('00000001-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
+                    server.getPrimaryService('00000001-4d3d-3d3d-3d3d-3d3d3d3d3d3d')
                     //                    .then(service => console.log('yay!'));
                     //                })
                     .then(service => {
@@ -648,8 +648,8 @@ export default class MapPage extends Component {
                         device.addEventListener('servicechanged', onServiceChanged);
                         device.addEventListener('serviceremoved', onServiceRemoved);
                         
-                        console.log('BLE> getting characteristic 00000002-3d3d-3d3d-3d3d-3d3d3d3d3d3d...');
-                        service.getCharacteristic('00000002-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
+                        console.log('BLE> getting characteristic 00000002-4d3d-3d3d-3d3d-3d3d3d3d3d3d...');
+                        service.getCharacteristic('00000002-4d3d-3d3d-3d3d-3d3d3d3d3d3d')
                         .then(characteristic => {
                             console.log('BLE> Starting notifications...');
                             //                        return characteristic.startNotifications();
@@ -670,8 +670,8 @@ export default class MapPage extends Component {
                                         descriptors.map(c => c.uuid).join('\n' + ' '.repeat(19)));
                         });
                         
-                        console.log('BLE> getting characteristic 00000006-3d3d-3d3d-3d3d-3d3d3d3d3d3d...');
-                        service.getCharacteristic('00000006-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
+                        console.log('BLE> getting characteristic 00000006-4d3d-3d3d-3d3d-3d3d3d3d3d3d...');
+                        service.getCharacteristic('00000006-4d3d-3d3d-3d3d-3d3d3d3d3d3d')
                         .then(characteristic => {
                             console.log('BLE> Starting notifications...');
                             characteristic.startNotifications().then(characteristic => {
@@ -682,8 +682,8 @@ export default class MapPage extends Component {
                             });
                         });
                               
-                        console.log('BLE> getting characteristic 00000003-3d3d-3d3d-3d3d-3d3d3d3d3d3d...');
-                        service.getCharacteristic('00000003-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
+                        console.log('BLE> getting characteristic 00000003-4d3d-3d3d-3d3d-3d3d3d3d3d3d...');
+                        service.getCharacteristic('00000003-4d3d-3d3d-3d3d-3d3d3d3d3d3d')
                         .then(characteristic => {
                             console.log('BLE> - ' + characteristic);
                             myCommandCharacteristic = characteristic;
@@ -694,15 +694,15 @@ export default class MapPage extends Component {
 //                            });
                         });
                         
-                        console.log('BLE> getting characteristic 00000004-3d3d-3d3d-3d3d-3d3d3d3d3d3d...');
-                        service.getCharacteristic('00000004-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
+                        console.log('BLE> getting characteristic 00000004-4d3d-3d3d-3d3d-3d3d3d3d3d3d...');
+                        service.getCharacteristic('00000004-4d3d-3d3d-3d3d-3d3d3d3d3d3d')
                         .then(characteristic => {
                             console.log('BLE> - ' + characteristic);
                             myConfigCharacteristic = characteristic;
                         });
                         
-                        console.log('BLE> getting characteristic 00000005-3d3d-3d3d-3d3d-3d3d3d3d3d3d...');
-                        service.getCharacteristic('00000005-3d3d-3d3d-3d3d-3d3d3d3d3d3d')
+                        console.log('BLE> getting characteristic 00000005-4d3d-3d3d-3d3d-3d3d3d3d3d3d...');
+                        service.getCharacteristic('00000005-4d3d-3d3d-3d3d-3d3d3d3d3d3d')
                         .then(characteristic => {
                             console.log('BLE> - ' + characteristic);
                             hereToThePiCharacteristic = characteristic;
@@ -973,6 +973,8 @@ export default class MapPage extends Component {
         function importAppInfo(contents) {
             console.log("App Info contents: " + JSON.stringify(contents) );
             
+            let appSelect = document.getElementById('id_app_select');
+            appSelect.options.length = 0;
             
             clearTable('id_table_apps');
             var myTable = document.getElementById('id_table_apps');
@@ -1008,7 +1010,12 @@ export default class MapPage extends Component {
                 rowNode.appendChild(cellNode);
                 
                 myTable.appendChild(rowNode);
+                
+                // Selection fo renabling:
+                
+                appSelect.append(new Option(appInfo['app'], appInfo['app']));
             }
+            appSelect.append(new Option("None", "None"));   // For disabling apps
         }
         
         function onDisconnected(event) {
@@ -1202,6 +1209,23 @@ export default class MapPage extends Component {
             sendCirclesCommand("R");
         })
         
+        document.getElementById('id_app_enable').addEventListener('click', function () {
+            let appSelect = document.getElementById('id_app_select');
+            console.log('Enabling app: ' + appSelect.value);
+            
+            var contents = JSON.stringify({
+                app: appSelect.value,
+            })
+            
+            var data = {
+                type: 'app_enable',
+                contents: contents,
+                length: contents.length
+            }
+            
+            sendLargeString(JSON.stringify(data));
+        })
+        
         
         document.getElementById('read_processed_btn').addEventListener('click', function () {
             //readCirclesConfig();
@@ -1247,7 +1271,7 @@ export default class MapPage extends Component {
         
         
         function setFormCurrent( formElement ) {
-            document.getElementById('map').hidden = false;
+            document.getElementById('map').hidden = true;
             formElements.forEach( function (element) {
                     element.hidden = true;
             });
@@ -1269,6 +1293,7 @@ export default class MapPage extends Component {
 //            var form = document.getEl?n;
             
             setFormCurrent( formZone );
+            document.getElementById('map').hidden = false;
         })
         
         document.getElementById('id_nav_internet').addEventListener('click', function () {
@@ -1292,7 +1317,6 @@ export default class MapPage extends Component {
             
 //            var form = document.getEl?n;
             setFormCurrent( formApps );
-            document.getElementById('map').hidden = true;
         })
     }
     
@@ -1381,6 +1405,57 @@ export default class MapPage extends Component {
                 
             </form>
                 
+                
+                
+                <form id="id_form_internet">
+                    <h4>Wifi:</h4>
+                    <input type="label" placeholder="Current Wifi" id="id_wifi" className="form_section" />
+                
+                    <div className="row">
+                        <div>
+                        <div className="column">
+                            <input type="button" value="Read Config" id="cmd_wifi_btn" className="form_section"/>
+                            <select id="id_wifi_aps" className="form_section">
+                            </select>
+                            <input type="button" value="Delete" id="del_wifi_btn" className="form_section"/>
+                        </div>
+                        </div>
+                
+                        <div>
+                        <div className="column">
+                            <input type="button" value="Scan Wifi" id="cmd_wifi_scan_btn" className="form_section"/>
+                            <select id="id_wifi_scan_aps" className="form_section">
+                            </select>
+                            <input type="password" placeholder="Passkey" id="id_wifi_psk" className="form_section" />
+                            <input type="button" value="Add" id="cfg_wifi_btn" className="form_section"/>
+                        </div>
+                        </div>
+                
+                    <div>
+                        <div className="table" id="id_iface_table">
+                        
+                <tr>
+                  <th>iface</th>
+                  <th>IP</th>
+                </tr>
+                        </div>
+                    </div>
+                    </div>
+                
+
+                </form>
+                
+                
+                <form id="id_form_debug">
+                <input type="button" value="Fake Poly" id="fake_btn" className="form_section"/>
+                <input type="id_input" placeholder="Parsed" id="id_parse" className="form_section" />
+                <h4>Pi Temperature:</h4>
+                    <input type="id_input" placeholder="CPU Temp" id="id_cpu" className="form_section" />
+                    <input type="button" value="Set C" id="c_btn" className="form_section"/>
+                    <input type="button" value="Set F" id="f_btn" className="form_section"/>
+
+                </form>
+                
             <div className="sidebar">
 
                 <form id="id_form_zone">
@@ -1400,15 +1475,7 @@ export default class MapPage extends Component {
                 
                 </form>
                 
-                <form id="id_form_debug">
-                <input type="button" value="Fake Poly" id="fake_btn" className="form_section"/>
-                <input type="id_input" placeholder="Parsed" id="id_parse" className="form_section" />
-                <h4>Pi Temperature:</h4>
-                    <input type="id_input" placeholder="CPU Temp" id="id_cpu" className="form_section" />
-                    <input type="button" value="Set C" id="c_btn" className="form_section"/>
-                    <input type="button" value="Set F" id="f_btn" className="form_section"/>
-
-                </form>
+                
                 
                 <form id="id_form_bluetooth">
                 
@@ -1432,43 +1499,7 @@ export default class MapPage extends Component {
                
                 
                 
-                <form id="id_form_internet">
-                    <h4>Wifi:</h4>
-                    <input type="label" placeholder="Current Wifi" id="id_wifi" className="form_section" />
                 
-                    <div className="row">
-                        <div>
-                        <div className="column">
-                            <input type="button" value="Read Config" id="cmd_wifi_btn" className="form_section"/>
-                            <select id="id_wifi_aps" className="form_section">
-                            </select>
-                            <input type="button" value="Delete" id="del_wifi_btn" className="form_section"/>
-                        </div>
-                        </div>
-                
-                        <div>
-                        <div className="column">
-                            <input type="button" value="Scan Wifi" id="cmd_wifi_scan_btn" className="form_section"/>
-                            <select id="id_wifi_scan_aps" className="form_section">
-                            </select>
-                            <input type="button" value="Add" id="cfg_wifi_btn" className="form_section"/>
-                            <input type="password" placeholder="Passkey" id="id_wifi_psk" className="form_section" />
-                        </div>
-                        </div>
-                
-                    <div>
-                        <div className="table" id="id_iface_table">
-                        
-                <tr>
-                  <th>iface</th>
-                  <th>IP</th>
-                </tr>
-                        </div>
-                    </div>
-                    </div>
-                
-
-                </form>
                 <p id="id-text-box"></p>
                 <p id="coord-text-box"></p>
                 <p id="test_send_btn"></p>
