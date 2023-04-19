@@ -29,6 +29,7 @@ import "bootstrap/dist/js/bootstrap.js";
 //import Navbar from "./../Navigation/Navbar.js";
 
 //import './../index.css';
+import './../styles.css';
 
 //class CustomButton extends React.Component {
 //    render() {
@@ -1266,7 +1267,7 @@ export default class MapPage extends Component {
             formInternet,
             formApps,
             formDebug
-                           ];
+            ];
         
         
         
@@ -1334,8 +1335,10 @@ export default class MapPage extends Component {
 //        </div>
 //    </div>
 //    </form>
+    
     //! switch to using material ui for buttons?
     render () {
+        
         return (
                 
         <div className="container">
@@ -1388,13 +1391,30 @@ export default class MapPage extends Component {
             <form id="id_form_apps">
                     <h4>Apps:</h4>
                 <div>
-                    <div className="table" id="id_table_apps">
+                    <div className="app-table" id="id_table_apps">
                 <tr>
                   <th>Name</th>
                   <th>Service</th>
                   <th>Enabled</th>
                   <th>Running</th>
                   <th>Description</th>
+                </tr>
+                <tr>
+                <td>
+                pandarecord
+                </td>
+                <td>
+                pandarecord
+                </td>
+                <td>
+                yes
+                </td>
+                <td>
+                yes
+                </td>
+                <td>
+                GPS/CAN
+                </td>
                 </tr>
                 </div>
                 </div>
@@ -1458,6 +1478,17 @@ export default class MapPage extends Component {
                 
             <div className="sidebar">
 
+                
+                
+                
+                
+                <form id="id_form_bluetooth">
+                
+                <h4>Status:</h4>
+                    <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
+                    <input type="button" value="Connect" id="blue_btn" className="form_section"/>
+                </form>
+                
                 <form id="id_form_zone">
                     <select id="id_shape" className="form_section">
                         <option value="Circle">Circle</option>
@@ -1471,17 +1502,6 @@ export default class MapPage extends Component {
                     <input type="id_input" placeholder="Enter VIN" maxLength="17" id="id_input" className="form_section" />
                     <input type="file" id="selectedFile" />
                     <input type="button" value="Import" id="import_btn" className="form_section"/>
-                
-                
-                </form>
-                
-                
-                
-                <form id="id_form_bluetooth">
-                
-                <h4>Status:</h4>
-                    <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
-                    <input type="button" value="Connect" id="blue_btn" className="form_section"/>
                 
                 <h4>Zone File Transfer:</h4>
                     <div className="row">
