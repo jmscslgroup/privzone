@@ -887,6 +887,9 @@ export default class MapPage extends Component {
             } else if(input['type'].localeCompare('wifi_scan') == 0) {
                 console.log("This is a wifi scan result!");
                 importWifiScan(JSON.parse(input['contents']));
+            } else if(input['type'].localeCompare('app_info') == 0) {
+                console.log("This is an app info!");
+                importAppInfo(JSON.parse(input['contents']));
             }
         }
         
@@ -955,6 +958,57 @@ export default class MapPage extends Component {
 //                document.getElementById('id_wifi_aps').options[length] = new Option( ap, length )
                 //                document.getElementById(id).selectedIndex = length;
             })
+        }
+        
+        function clearTable(table) {
+            var myTable = document.getElementById(table);
+            var tableRows = myTable.getElementsByTagName('tr');
+            var rowCount = tableRows.length;
+            for( var i = rowCount-1; i > 0; i--) {
+//                myTable.deleteRow(i);
+                myTable.removeChild(tableRows[i]);
+            }
+        }
+        
+        function importAppInfo(contents) {
+            console.log("App Info contents: " + JSON.stringify(contents) );
+            
+            
+            clearTable('id_table_apps');
+            var myTable = document.getElementById('id_table_apps');
+            
+            for( const i in contents ) {
+                let appInfo = contents[i];
+                console.log("appInfo = " + appInfo);
+                var rowNode = document.createElement("tr");
+                var cellNode = document.createElement("td");
+                
+                var textNode = document.createTextNode(appInfo['app']);
+                cellNode.appendChild(textNode);
+                rowNode.appendChild(cellNode);
+                
+                cellNode = document.createElement("td");
+                textNode = document.createTextNode(appInfo['service']);
+                cellNode.appendChild(textNode);
+                rowNode.appendChild(cellNode);
+                
+                cellNode = document.createElement("td");
+                textNode = document.createTextNode(appInfo['enabled']);
+                cellNode.appendChild(textNode);
+                rowNode.appendChild(cellNode);
+                
+                cellNode = document.createElement("td");
+                textNode = document.createTextNode(appInfo['running']);
+                cellNode.appendChild(textNode);
+                rowNode.appendChild(cellNode);
+                
+                cellNode = document.createElement("td");
+                textNode = document.createTextNode(appInfo['description']);
+                cellNode.appendChild(textNode);
+                rowNode.appendChild(cellNode);
+                
+                myTable.appendChild(rowNode);
+            }
         }
         
         function onDisconnected(event) {
@@ -1071,6 +1125,9 @@ export default class MapPage extends Component {
         document.getElementById('cmd_wifi_scan_btn').addEventListener('click', function () {
             sendCirclesCommand("S");
         })
+        document.getElementById('id_app_read').addEventListener('click', function () {
+            sendCirclesCommand("A");
+        })
         document.getElementById('cfg_wifi_btn').addEventListener('click', function () {
             console.log('Configuring wifi AP: ' + document.getElementById('id_wifi_scan_aps').value);
             
@@ -1177,17 +1234,20 @@ export default class MapPage extends Component {
         
         var formZone = document.getElementById('id_form_zone');
         var formInternet = document.getElementById('id_form_internet');
+        var formApps = document.getElementById('id_form_apps');
         var formDebug = document.getElementById('id_form_debug');
         
         var formElements = [
             formZone,
             formInternet,
+            formApps,
             formDebug
                            ];
         
         
         
         function setFormCurrent( formElement ) {
+            document.getElementById('map').hidden = false;
             formElements.forEach( function (element) {
                     element.hidden = true;
             });
@@ -1225,6 +1285,14 @@ export default class MapPage extends Component {
 //            var form = document.getEl?n;
             
             setFormCurrent( formDebug );
+        })
+        
+        document.getElementById('id_nav_apps').addEventListener('click', function () {
+            console.log('Click Apps');
+            
+//            var form = document.getEl?n;
+            setFormCurrent( formApps );
+            document.getElementById('map').hidden = true;
         })
     }
     
@@ -1269,6 +1337,9 @@ export default class MapPage extends Component {
                       <li className="nav-item">
                         <a className="nav-link" id="id_nav_internet" href="#">Internet</a>
                       </li>
+                <li className="nav-item">
+                    <a className="nav-link" id="id_nav_apps" href="#">Apps</a>
+                </li>
                     <li className="nav-item">
                         <a className="nav-link" id="id_nav_debug" href="#">Debug</a>
                     </li>
@@ -1289,6 +1360,27 @@ export default class MapPage extends Component {
                 
                 
             <div className="map" id="map"></div>
+                
+            <form id="id_form_apps">
+                    <h4>Apps:</h4>
+                <div>
+                    <div className="table" id="id_table_apps">
+                <tr>
+                  <th>Name</th>
+                  <th>Service</th>
+                  <th>Enabled</th>
+                  <th>Running</th>
+                  <th>Description</th>
+                </tr>
+                </div>
+                </div>
+                
+                <select id="id_app_select" className="form_section" />
+                <input type="button" value="Enable App" id="id_app_enable" className="form_section"/>
+                <input type="button" value="Refresh Apps" id="id_app_read" className="form_section"/>
+                
+            </form>
+                
             <div className="sidebar">
 
                 <form id="id_form_zone">
@@ -1337,6 +1429,7 @@ export default class MapPage extends Component {
                 
                 </form>
                 
+               
                 
                 
                 <form id="id_form_internet">
