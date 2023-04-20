@@ -638,12 +638,14 @@ export default class MapPage extends Component {
                 device.addEventListener('gattserverdisconnected', onDisconnected);
                 device.addEventListener('advertisementreceived', onAdvertisementReceived);
                 
+                heartbeatBleEnabled = false;
                 setStatus("Connecting...");
                 handleBleConnectionStateChange("Connecting...");
                 device.gatt.connect()
                 .then(server => {
                     console.log('BLE> Connected: ' + server.connected);
                     setStatus("Connection Success!");
+        
                     handleBleConnectionStateChange("Connected");
                     //server.getPrimaryServices().
                     //then( services => console.log('server.getPrimaryServices(): -> ' + services.getPrimaryServices()));
@@ -750,7 +752,8 @@ export default class MapPage extends Component {
                                 characteristic.addEventListener('characteristicvaluechanged',
                                                                 //                                                        handleCharacteristicValueChanged);
                                                                 handleNotifications);
-                                console.log('BLE> Notifications have been started.');
+                                heartbeatBleEnabled = true;
+                                console.log('BLE> Heartbeat otifications have been started.');
                             });
                             
                         })
@@ -785,8 +788,8 @@ export default class MapPage extends Component {
 //          }
 //          console.log('BLE> ' + a.join(' '));
             let utf8decoder = new TextDecoder();
-            console.log('BLE> ' + utf8decoder.decode(value));
-            heartbeatBleCounter = 0;
+            //console.log('BLE> ' + utf8decoder.decode(value));
+            heartbeatBleCounter = 0;    // reset heartbeat
             
             document.getElementById('id_cpu').value = utf8decoder.decode(value);
         }
@@ -1095,7 +1098,11 @@ export default class MapPage extends Component {
         handleBleConnectionStateChange("Disconnected");
         
         var heartbeatBleCounter = 0;
+        var heartbeatBleEnabled = false;
         setInterval(function(){
+            if(!heartbeatBleEnabled) {
+                return;
+            }
             if(heartbeatBleCounter >= 2) {
                 console.log("heartbeat failure!");
                 handleBleConnectionStateChange("Disconnected");
