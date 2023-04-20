@@ -639,6 +639,7 @@ export default class MapPage extends Component {
                 device.addEventListener('advertisementreceived', onAdvertisementReceived);
                 
                 setStatus("Connecting...");
+                handleBleConnectionStateChange("Connecting...");
                 device.gatt.connect()
                 .then(server => {
                     console.log('BLE> Connected: ' + server.connected);
@@ -957,13 +958,13 @@ export default class MapPage extends Component {
                 myTableBody.appendChild(rowNode);
             }
             
-            document.getElementById('id_wifi_aps').options.length = 0;
+            document.getElementById('id_select_wifi_aps').options.length = 0;
             //            for( ap of contents['configured']) {
             contents['configured'].forEach(ap => {
-                document.getElementById('id_wifi_aps').append(new Option(ap, ap));
+                document.getElementById('id_select_wifi_aps').append(new Option(ap, ap));
                 
-//                var length=document.getElementById('id_wifi_aps').options.length
-//                document.getElementById('id_wifi_aps').options[length] = new Option( ap, length )
+//                var length=document.getElementById('id_select_wifi_aps').options.length
+//                document.getElementById('id_select_wifi_aps').options[length] = new Option( ap, length )
                 //                document.getElementById(id).selectedIndex = length;
             })
             
@@ -972,12 +973,12 @@ export default class MapPage extends Component {
         }
         
         function importWifiScan(contents) {
-            document.getElementById('id_wifi_scan_aps').options.length = 0;
+            document.getElementById('id_select_wifi_scan_aps').options.length = 0;
             contents['scan_result'].forEach(ap => {
-                document.getElementById('id_wifi_scan_aps').append(new Option(ap, ap));
+                document.getElementById('id_select_wifi_scan_aps').append(new Option(ap, ap));
                 
-//                var length=document.getElementById('id_wifi_aps').options.length
-//                document.getElementById('id_wifi_aps').options[length] = new Option( ap, length )
+//                var length=document.getElementById('id_select_wifi_aps').options.length
+//                document.getElementById('id_select_wifi_aps').options[length] = new Option( ap, length )
                 //                document.getElementById(id).selectedIndex = length;
             })
         }
@@ -1058,13 +1059,39 @@ export default class MapPage extends Component {
             
             if(state.localeCompare("Connected") == 0 ) {
                 connectionLabel.style.backgroundColor = "cyan";
+                shouldEnableBleRequiredUi(true);
             } else if (state.localeCompare("Disconnected") == 0 ) {
                 connectionLabel.style.backgroundColor = "red";
+                shouldEnableBleRequiredUi(false);
             } else {
                 connectionLabel.style.backgroundColor = "orange";
+                shouldEnableBleRequiredUi(false);
             }
             // check state then disable/enable various ui elements here:
         }
+        
+        function shouldEnableBleRequiredUi(enable) {
+            const bleElements = [
+                           'id_btn_send_zone',
+                           'id_btn_read_zone',
+                           'id_btn_read_zone_processed',
+                           'id_btn_add_wifi',
+                           'id_wifi_psk',
+                           'id_btn_read_wifi',
+                           'id_btn_del_wifi',
+                           'id_btn_app_enable',
+                           'id_btn_app_read',
+                           'id_btn_app_restart',
+                           'id_btn_app_stop',
+                           'id_btn_wifi_scan'
+            ];
+            bleElements.forEach( element => {
+                document.getElementById(element).disabled = !enable;
+            })
+        }
+        
+        // Default:
+        handleBleConnectionStateChange("Disconnected");
         
         function onAvailabiltyChanged(event) {
           console.log('BLE> Availability changed: ' + event.value);
@@ -1173,19 +1200,19 @@ export default class MapPage extends Component {
         document.getElementById('f_btn').addEventListener('click', function () {
             sendToBlue("F");
         })
-        document.getElementById('cmd_wifi_btn').addEventListener('click', function () {
+        document.getElementById('id_btn_read_wifi').addEventListener('click', function () {
             sendCirclesCommand("W");
         })
-        document.getElementById('cmd_wifi_scan_btn').addEventListener('click', function () {
+        document.getElementById('id_btn_wifi_scan').addEventListener('click', function () {
             sendCirclesCommand("S");
         })
-        document.getElementById('id_app_read').addEventListener('click', function () {
+        document.getElementById('id_btn_app_read').addEventListener('click', function () {
             sendCirclesCommand("A");
         })
-        document.getElementById('id_app_restart').addEventListener('click', function () {
+        document.getElementById('id_btn_app_restart').addEventListener('click', function () {
             sendCirclesCommand("Ar");
         })
-        document.getElementById('id_app_stop').addEventListener('click', function () {
+        document.getElementById('id_btn_app_stop').addEventListener('click', function () {
             sendCirclesCommand("As");
         })
         document.getElementById('id_app_fake').addEventListener('click', function () {
@@ -1204,13 +1231,13 @@ export default class MapPage extends Component {
             }];
             importAppInfo(contents);
         })
-        document.getElementById('cfg_wifi_btn').addEventListener('click', function () {
-            console.log('Configuring wifi AP: ' + document.getElementById('id_wifi_scan_aps').value);
+        document.getElementById('id_btn_add_wifi').addEventListener('click', function () {
+            console.log('Configuring wifi AP: ' + document.getElementById('id_select_wifi_scan_aps').value);
             
             document.getElementById('id_wifi_psk').value;
             
             var contents = JSON.stringify({
-                ssid: document.getElementById('id_wifi_scan_aps').value,
+                ssid: document.getElementById('id_select_wifi_scan_aps').value,
                 psk: document.getElementById('id_wifi_psk').value
             })
             
@@ -1223,11 +1250,11 @@ export default class MapPage extends Component {
             sendJsonDataToPi(JSON.stringify(data));
             
         })
-        document.getElementById('del_wifi_btn').addEventListener('click', function () {
-            console.log('Deleting wifi AP: ' + document.getElementById('id_wifi_aps').value);
+        document.getElementById('id_btn_del_wifi').addEventListener('click', function () {
+            console.log('Deleting wifi AP: ' + document.getElementById('id_select_wifi_aps').value);
             
             var contents = JSON.stringify({
-                ssid: document.getElementById('id_wifi_aps').value
+                ssid: document.getElementById('id_select_wifi_aps').value
             })
             var data = {
                 type: 'wifi_remove',
@@ -1237,7 +1264,7 @@ export default class MapPage extends Component {
             
             sendJsonDataToPi(JSON.stringify(data));
         })
-        document.getElementById('sendcfg_btn').addEventListener('click', function () {
+        document.getElementById('id_btn_send_zone').addEventListener('click', function () {
            // sendCirclesConfig("{example: 'data'}");
             //sendJsonDataToPi("hello input BLE!");
             //sendJsonDataToPi(generate_config(data));
@@ -1273,12 +1300,12 @@ export default class MapPage extends Component {
                 }
             });
         })
-        document.getElementById('readcfg_btn').addEventListener('click', function () {
+        document.getElementById('id_btn_read_zone').addEventListener('click', function () {
             //readCirclesConfig();
             sendCirclesCommand("R");
         })
         
-        document.getElementById('id_app_enable').addEventListener('click', function () {
+        document.getElementById('id_btn_app_enable').addEventListener('click', function () {
             let appSelect = document.getElementById('id_app_select');
             console.log('Enabling app: ' + appSelect.value);
             
@@ -1296,7 +1323,7 @@ export default class MapPage extends Component {
         })
         
         
-        document.getElementById('read_processed_btn').addEventListener('click', function () {
+        document.getElementById('id_btn_read_zone_processed').addEventListener('click', function () {
             //readCirclesConfig();
             sendCirclesCommand("P");
         })
@@ -1476,11 +1503,11 @@ export default class MapPage extends Component {
                 </div>
                 
                 <select id="id_app_select" className="form_section" />
-                <input type="button" value="Enable App" id="id_app_enable" className="form_section"/>
-                <input type="button" value="Refresh Apps" id="id_app_read" className="form_section"/>
+                <input type="button" value="Enable App" id="id_btn_app_enable" className="form_section"/>
+                <input type="button" value="Refresh Apps" id="id_btn_app_read" className="form_section"/>
                 <input type="button" value="Fake it" id="id_app_fake" className="form_section"/>
-                <input type="button" value="Restart" id="id_app_restart" className="form_section"/>
-                <input type="button" value="Stop" id="id_app_stop" className="form_section"/>
+                <input type="button" value="Restart" id="id_btn_app_restart" className="form_section"/>
+                <input type="button" value="Stop" id="id_btn_app_stop" className="form_section"/>
                 
             </form>
                 
@@ -1493,20 +1520,20 @@ export default class MapPage extends Component {
                     <div className="row">
                         <div>
                         <div className="column">
-                            <input type="button" value="Read Config" id="cmd_wifi_btn" className="form_section"/>
-                            <select id="id_wifi_aps" className="form_section">
+                            <input type="button" value="Read Config" id="id_btn_read_wifi" className="form_section"/>
+                            <select id="id_select_wifi_aps" className="form_section">
                             </select>
-                            <input type="button" value="Delete" id="del_wifi_btn" className="form_section"/>
+                            <input type="button" value="Delete" id="id_btn_del_wifi" className="form_section"/>
                         </div>
                         </div>
                 
                         <div>
                         <div className="column">
-                            <input type="button" value="Scan Wifi" id="cmd_wifi_scan_btn" className="form_section"/>
-                            <select id="id_wifi_scan_aps" className="form_section">
+                            <input type="button" value="Scan Wifi" id="id_btn_wifi_scan" className="form_section"/>
+                            <select id="id_select_wifi_scan_aps" className="form_section">
                             </select>
                             <input type="password" placeholder="Passkey" id="id_wifi_psk" className="form_section" />
-                            <input type="button" value="Add" id="cfg_wifi_btn" className="form_section"/>
+                            <input type="button" value="Add" id="id_btn_add_wifi" className="form_section"/>
                         </div>
                         </div>
                 
@@ -1551,7 +1578,7 @@ export default class MapPage extends Component {
                 <form id="id_form_bluetooth">
                 
                 <h4>Status:</h4>
-                <input type="text" id="id_label_status" value="Disconnected" />
+                <input type="text bg-red" id="id_label_status" />
                     <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
                 
                 
@@ -1575,11 +1602,11 @@ export default class MapPage extends Component {
                 <h4>Zone File Transfer:</h4>
                     <div className="row">
                         <div className="column">
-                            <input type="button" value="Send Zone" id="sendcfg_btn" className="form_section"/>
+                            <input type="button" value="Send Zone" id="id_btn_send_zone" className="form_section"/>
                         </div>
                         <div className="column">
-                            <input type="button" value="Read Zone" id="readcfg_btn" className="form_section"/>
-                            <input type="button" value="Read Processed" id="read_processed_btn" className="form_section"/>
+                            <input type="button" value="Read Zone" id="id_btn_read_zone" className="form_section"/>
+                            <input type="button" value="Read Processed" id="id_btn_read_zone_processed" className="form_section"/>
                         </div>
                     </div>
                 
