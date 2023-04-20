@@ -900,16 +900,20 @@ export default class MapPage extends Component {
         function importWifi(contents) {
             console.log("Wifi contents: " + JSON.stringify(contents) )
             
-            document.getElementById('id_wifi').value = contents['current'] + " " + contents['wlan0']['IP'];
             
-            let ifaces = {
-                'wlan0': contents['wlan0'],
-                'eth0': contents['eth0'],
-                'lo': contents['lo']
-            };
-            if ('eth1' in contents) {
-                ifaces['eth1'] = contents['eth1'];
-            }
+            let ifaces = {}
+            contents['interfaces'].forEach( iface => {
+                ifaces[iface['name']] = iface;
+            })
+            
+//            let ifaces = {
+//                'wlan0': contents['wlan0'],
+//                'eth0': contents['eth0'],
+//                'lo': contents['lo']
+//            };
+//            if ('eth1' in contents) {
+//                ifaces['eth1'] = contents['eth1'];
+//            }
             
             clearTable('id_iface_table');
             
@@ -955,6 +959,9 @@ export default class MapPage extends Component {
 //                document.getElementById('id_wifi_aps').options[length] = new Option( ap, length )
                 //                document.getElementById(id).selectedIndex = length;
             })
+            
+            
+            document.getElementById('id_wifi').value = contents['current'] + " " + ifaces['wlan0']['IP'];
         }
         
         function importWifiScan(contents) {

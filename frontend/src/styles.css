@@ -1,15 +1,19 @@
 /* src/styles.css */
 
+
 body {
     font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    margin: 0;
+    
     font-size: 1rem;
     font-weight: 1.5;
     line-height: 1.5;
     color: #292b2c;
     background-color: #fff;
     
+    
 }
+
+/* https://codepen.io/andornagy/pen/gaGBZz */
 
 table, th, td {
     border: 1px solid black;
@@ -17,7 +21,27 @@ table, th, td {
     
 }
 
+table {
     
+    margin: 0 auto;
+}
+
+th {
+    background: #3498db;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+td, th {
+    padding: 10px;
+    font-size: 18px;
+}
+    
+td {
+    text-align: left;
+    
+}
     
 tr:nth-child(even) {
     background-color: #D6EEEE;
