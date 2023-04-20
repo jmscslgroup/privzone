@@ -786,6 +786,7 @@ export default class MapPage extends Component {
 //          console.log('BLE> ' + a.join(' '));
             let utf8decoder = new TextDecoder();
             console.log('BLE> ' + utf8decoder.decode(value));
+            heartbeatBleCounter = 0;
             
             document.getElementById('id_cpu').value = utf8decoder.decode(value);
         }
@@ -1092,6 +1093,17 @@ export default class MapPage extends Component {
         
         // Default:
         handleBleConnectionStateChange("Disconnected");
+        
+        var heartbeatBleCounter = 0;
+        setInterval(function(){
+            if(heartbeatBleCounter >= 2) {
+                console.log("heartbeat failure!");
+                handleBleConnectionStateChange("Disconnected");
+            } else {
+                heartbeatBleCounter++;
+            }
+            
+        }, 1000)
         
         function onAvailabiltyChanged(event) {
           console.log('BLE> Availability changed: ' + event.value);
@@ -1577,7 +1589,7 @@ export default class MapPage extends Component {
                 
                 <form id="id_form_bluetooth">
                 
-                <h4>Status:</h4>
+                <h4>Bluetooth Status:</h4>
                 <input type="text bg-red" id="id_label_status" />
                     <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
                 
