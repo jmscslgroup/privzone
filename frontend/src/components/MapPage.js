@@ -908,13 +908,17 @@ export default class MapPage extends Component {
                 ifaces['eth1'] = contents['eth1'];
             }
             
+            clearTable('id_iface_table');
+            
             var myTable = document.getElementById('id_iface_table');
-            var tableRows = myTable.getElementsByTagName('tr');
-            var rowCount = tableRows.length;
-            for( var i = rowCount-1; i > 0; i--) {
-//                myTable.deleteRow(i);
-                myTable.removeChild(tableRows[i]);
-            }
+//            var tableRows = myTable.getElementsByTagName('tr');
+            var myTableBody = myTable.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0];
+//            var tableRows = mmyTableBody.getElementsByTagName('tr');
+//            var rowCount = tableRows.length;
+//            for( var i = rowCount-1; i > 0; i--) {
+////                myTable.deleteRow(i);
+//                myTableBody.removeChild(tableRows[i]);
+//            }
 //            ifaces.forEach( iface => {
             for( const iface in ifaces ) {
                 var rowNode = document.createElement("tr");
@@ -936,7 +940,7 @@ export default class MapPage extends Component {
                 rowNode.appendChild(cellNode);
                 
                 
-                myTable.appendChild(rowNode);
+                myTableBody.appendChild(rowNode);
             }
             
             document.getElementById('id_wifi_aps').options.length = 0;
@@ -963,11 +967,13 @@ export default class MapPage extends Component {
         
         function clearTable(table) {
             var myTable = document.getElementById(table);
-            var tableRows = myTable.getElementsByTagName('tr');
+            var myTableBody = myTable.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0];
+            var tableRows = myTableBody.getElementsByTagName('tr');
+//            var tableRows = myTable.getElementsByTagName('tr');
             var rowCount = tableRows.length;
-            for( var i = rowCount-1; i > 0; i--) {
+            for( var i = rowCount-1; i >= 0; i--) {
 //                myTable.deleteRow(i);
-                myTable.removeChild(tableRows[i]);
+                myTableBody.removeChild(tableRows[i]);
             }
         }
         
@@ -979,6 +985,7 @@ export default class MapPage extends Component {
             
             clearTable('id_table_apps');
             var myTable = document.getElementById('id_table_apps');
+            var myTableBody = myTable.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0];
             
             for( const i in contents ) {
                 let appInfo = contents[i];
@@ -1010,7 +1017,8 @@ export default class MapPage extends Component {
                 cellNode.appendChild(textNode);
                 rowNode.appendChild(cellNode);
                 
-                myTable.appendChild(rowNode);
+//                myTable.appendChild(rowNode);
+                myTableBody.appendChild(rowNode);
                 
                 // Selection fo renabling:
                 
@@ -1135,6 +1143,28 @@ export default class MapPage extends Component {
         })
         document.getElementById('id_app_read').addEventListener('click', function () {
             sendCirclesCommand("A");
+        })
+        document.getElementById('id_app_restart').addEventListener('click', function () {
+            sendCirclesCommand("Ar");
+        })
+        document.getElementById('id_app_restop').addEventListener('click', function () {
+            sendCirclesCommand("As");
+        })
+        document.getElementById('id_app_fake').addEventListener('click', function () {
+            var contents = [{
+                app: "pandarecord",
+                service: "pandarecord",
+                enabled: "no",
+                running: "yes",
+                description: "CAN/GPS recorder"
+            },{
+                app: "simpleSend",
+                service: "simplesend",
+                enabled: "yes",
+                running: "no",
+                description: "Joystick comamnd spoofer"
+            }];
+            importAppInfo(contents);
         })
         document.getElementById('cfg_wifi_btn').addEventListener('click', function () {
             console.log('Configuring wifi AP: ' + document.getElementById('id_wifi_scan_aps').value);
@@ -1392,6 +1422,8 @@ export default class MapPage extends Component {
                     <h4>Apps:</h4>
                 <div>
                     <div className="app-table" id="id_table_apps">
+                <table>
+                <thead>
                 <tr>
                   <th>Name</th>
                   <th>Service</th>
@@ -1399,34 +1431,25 @@ export default class MapPage extends Component {
                   <th>Running</th>
                   <th>Description</th>
                 </tr>
-                <tr>
-                <td>
-                pandarecord
-                </td>
-                <td>
-                pandarecord
-                </td>
-                <td>
-                yes
-                </td>
-                <td>
-                yes
-                </td>
-                <td>
-                GPS/CAN
-                </td>
-                </tr>
+                </thead>
+                <tbody>
+                <tr/>
+                </tbody>
+                </table>
                 </div>
                 </div>
                 
                 <select id="id_app_select" className="form_section" />
                 <input type="button" value="Enable App" id="id_app_enable" className="form_section"/>
                 <input type="button" value="Refresh Apps" id="id_app_read" className="form_section"/>
+                <input type="button" value="Fake it" id="id_app_fake" className="form_section"/>
+                <input type="button" value="Restart" id="id_app_restart" className="form_section"/>
+                <input type="button" value="Stop" id="id_app_stop" className="form_section"/>
                 
             </form>
                 
                 
-                
+                <div className="container">
                 <form id="id_form_internet">
                     <h4>Wifi:</h4>
                     <input type="label" placeholder="Current Wifi" id="id_wifi" className="form_section" />
@@ -1453,17 +1476,24 @@ export default class MapPage extends Component {
                 
                     <div>
                         <div className="table" id="id_iface_table">
-                        
+                <table>
+                <thead>
                 <tr>
                   <th>iface</th>
                   <th>IP</th>
                 </tr>
+                </thead>
+                <tbody>
+                <tr />
+                </tbody>
+                </table>
                         </div>
                     </div>
                     </div>
                 
 
                 </form>
+                </div>
                 
                 
                 <form id="id_form_debug">
