@@ -827,6 +827,9 @@ export default class MapPage extends Component {
                message.localeCompare("Wifi complete!") == 0) {
                 console.log("Wifi updated, refreshing configurations...");
                 sendCirclesCommand("W");
+            } else if(message.localeCompare("App command success!") == 0) {
+                console.log("Apps updated, invoking app refresh");
+                sendCirclesCommand("A");
             }
             
         }
@@ -1147,7 +1150,7 @@ export default class MapPage extends Component {
         document.getElementById('id_app_restart').addEventListener('click', function () {
             sendCirclesCommand("Ar");
         })
-        document.getElementById('id_app_restop').addEventListener('click', function () {
+        document.getElementById('id_app_stop').addEventListener('click', function () {
             sendCirclesCommand("As");
         })
         document.getElementById('id_app_fake').addEventListener('click', function () {
@@ -1162,7 +1165,7 @@ export default class MapPage extends Component {
                 service: "simplesend",
                 enabled: "yes",
                 running: "no",
-                description: "Joystick comamnd spoofer"
+                description: "Joystick command spoofer"
             }];
             importAppInfo(contents);
         })
@@ -1320,33 +1323,22 @@ export default class MapPage extends Component {
         })
         document.getElementById('id_nav_zone').addEventListener('click', function () {
             console.log('Click zone! ');
-            
-//            var form = document.getEl?n;
-            
             setFormCurrent( formZone );
             document.getElementById('map').hidden = false;
         })
         
         document.getElementById('id_nav_internet').addEventListener('click', function () {
             console.log('Click internet');
-            
-//            var form = document.getEl?n;
-            
             setFormCurrent( formInternet );
         })
         
         document.getElementById('id_nav_debug').addEventListener('click', function () {
             console.log('Click internet');
-            
-//            var form = document.getEl?n;
-            
             setFormCurrent( formDebug );
         })
         
         document.getElementById('id_nav_apps').addEventListener('click', function () {
             console.log('Click Apps');
-            
-//            var form = document.getEl?n;
             setFormCurrent( formApps );
         })
     }
@@ -1449,7 +1441,7 @@ export default class MapPage extends Component {
             </form>
                 
                 
-                <div className="container">
+                
                 <form id="id_form_internet">
                     <h4>Wifi:</h4>
                     <input type="label" placeholder="Current Wifi" id="id_wifi" className="form_section" />
@@ -1493,7 +1485,6 @@ export default class MapPage extends Component {
                 
 
                 </form>
-                </div>
                 
                 
                 <form id="id_form_debug">
