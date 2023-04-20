@@ -8,3 +8,6 @@ psycopg2-binary
 bootstrap
 react-bootstrap
 bootstrap@5.1.3
+@mui/material
+@emotion/react
+@emotion/styled

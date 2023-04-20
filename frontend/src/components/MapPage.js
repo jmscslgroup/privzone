@@ -24,12 +24,16 @@ import {
 } from 'ol/style.js';
 
 
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.js";
 //import Navbar from "./../Navigation/Navbar.js";
 
 //import './../index.css';
 import './../styles.css';
+
+import Grid from '@mui/material/Grid';
+//import Item from '@mui/material/Item';
 
 //class CustomButton extends React.Component {
 //    render() {
@@ -576,6 +580,7 @@ export default class MapPage extends Component {
             }
         });
         
+        var bleDevice;
         var myCharacteristic;
         var myCommandCharacteristic;
         var myConfigCharacteristic;
@@ -624,6 +629,7 @@ export default class MapPage extends Component {
             console.log('BLE> with ' + JSON.stringify(options));
             navigator.bluetooth.requestDevice( options )
             .then(device => {
+                bleDevice = device;
                 //console.log(`Name: ${device.name}`);
                 console.log('BLE> Name:             ' + device.name);
                 console.log('BLE> Id:               ' + device.id);
@@ -637,6 +643,7 @@ export default class MapPage extends Component {
                 .then(server => {
                     console.log('BLE> Connected: ' + server.connected);
                     setStatus("Connection Success!");
+                    handleBleConnectionStateChange("Connected");
                     //server.getPrimaryServices().
                     //then( services => console.log('server.getPrimaryServices(): -> ' + services.getPrimaryServices()));
                     
@@ -1042,6 +1049,21 @@ export default class MapPage extends Component {
           myCharacteristic = null;
           console.log('BLE> Bluetooth Device disconnected');
           setStatus("Disconnected, try reconnecting");
+            handleBleConnectionStateChange("Disconnected");
+        }
+        
+        function handleBleConnectionStateChange(state) {
+            var connectionLabel = document.getElementById('id_label_status');
+            connectionLabel.value = state;
+            
+            if(state.localeCompare("Connected") == 0 ) {
+                connectionLabel.style.backgroundColor = "cyan";
+            } else if (state.localeCompare("Disconnected") == 0 ) {
+                connectionLabel.style.backgroundColor = "red";
+            } else {
+                connectionLabel.style.backgroundColor = "orange";
+            }
+            // check state then disable/enable various ui elements here:
         }
         
         function onAvailabiltyChanged(event) {
@@ -1060,6 +1082,7 @@ export default class MapPage extends Component {
         }
         function onServiceRemoved(event) {
           console.log('BLE> Service Removed: ' + event.value);
+            handleBleConnectionStateChange("Disconnected");
         }
         
         function sendCirclesCommand(value) {
@@ -1076,6 +1099,7 @@ export default class MapPage extends Component {
              .catch(error => {
                  console.log('BLE> Argh! ' + error);
                  setStatus("Error occured, try reconnecting: " + error);
+                 handleBleConnectionStateChange("Disconnected");
              });
         }
         
@@ -1093,6 +1117,8 @@ export default class MapPage extends Component {
              .catch(error => {
                  console.log('BLE> Argh! ' + error);
                  setStatus("Error occured, try reconnecting: " + error);
+                 
+                 handleBleConnectionStateChange("Disconnected");
              });
         }
         function sendCirclesConfig(value) {
@@ -1109,10 +1135,11 @@ export default class MapPage extends Component {
              .catch(error => {
                  console.log('BLE> Argh! ' + error);
                  setStatus("Error occured, try reconnecting: " + error);
+                 handleBleConnectionStateChange("Disconnected");
              });
         }
         
-        function sendLargeString(buffer) {
+        function sendJsonDataToPi(buffer) {
             if (!hereToThePiCharacteristic) {
                 return;
               }
@@ -1124,7 +1151,7 @@ export default class MapPage extends Component {
             hereToThePiCharacteristic.writeValue(encoder.encode(buffer.slice(0, max_size)))
             .then(_ => {
                 if( buffer.length > max_size) {
-                    sendLargeString(buffer.slice(max_size));
+                    sendJsonDataToPi(buffer.slice(max_size));
                     console.log('BLE> Success! sending next data chunk...');
                 } else {
                     console.log('BLE> Success! Complete!');
@@ -1135,6 +1162,7 @@ export default class MapPage extends Component {
             .catch(error => {
                 console.log('BLE> Argh! ' + error);
                 setStatus("Error occured, try reconnecting: " + error);
+                handleBleConnectionStateChange("Disconnected");
             });
             
         }
@@ -1192,7 +1220,7 @@ export default class MapPage extends Component {
                 length: contents.length
             }
             
-            sendLargeString(JSON.stringify(data));
+            sendJsonDataToPi(JSON.stringify(data));
             
         })
         document.getElementById('del_wifi_btn').addEventListener('click', function () {
@@ -1207,12 +1235,12 @@ export default class MapPage extends Component {
                 length: contents.length
             }
             
-            sendLargeString(JSON.stringify(data));
+            sendJsonDataToPi(JSON.stringify(data));
         })
         document.getElementById('sendcfg_btn').addEventListener('click', function () {
            // sendCirclesConfig("{example: 'data'}");
-            //sendLargeString("hello input BLE!");
-            //sendLargeString(generate_config(data));
+            //sendJsonDataToPi("hello input BLE!");
+            //sendJsonDataToPi(generate_config(data));
             
             // bad copy/paste:
             fetch("/api/add-entry/", {
@@ -1240,8 +1268,8 @@ export default class MapPage extends Component {
                         contents: contents,
                         length: contents.length
                     }
-//                    sendLargeString(generate_config(res));
-                    sendLargeString(JSON.stringify(myJson));
+//                    sendJsonDataToPi(generate_config(res));
+                    sendJsonDataToPi(JSON.stringify(myJson));
                 }
             });
         })
@@ -1264,7 +1292,7 @@ export default class MapPage extends Component {
                 length: contents.length
             }
             
-            sendLargeString(JSON.stringify(data));
+            sendJsonDataToPi(JSON.stringify(data));
         })
         
         
@@ -1370,7 +1398,11 @@ export default class MapPage extends Component {
         
         return (
                 
+                
+            
         <div className="container">
+                
+                
                 
                 <nav className="navbar navbar-expand-lg navbar-dark bg-dark" id="id_navbar">
                   <a className="navbar-brand" href="#">Privzone</a>
@@ -1417,7 +1449,12 @@ export default class MapPage extends Component {
                 
             <div className="map" id="map"></div>
                 
+                
+                
             <form id="id_form_apps">
+                
+                
+                
                     <h4>Apps:</h4>
                 <div>
                     <div className="app-table" id="id_table_apps">
@@ -1502,6 +1539,7 @@ export default class MapPage extends Component {
                     <input type="button" value="Set C" id="c_btn" className="form_section"/>
                     <input type="button" value="Set F" id="f_btn" className="form_section"/>
 
+                
                 </form>
                 
             <div className="sidebar">
@@ -1513,7 +1551,10 @@ export default class MapPage extends Component {
                 <form id="id_form_bluetooth">
                 
                 <h4>Status:</h4>
+                <input type="text" id="id_label_status" value="Disconnected" />
                     <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
+                
+                
                     <input type="button" value="Connect" id="blue_btn" className="form_section"/>
                 </form>
                 
@@ -1552,6 +1593,7 @@ export default class MapPage extends Component {
                 <p id="coord-text-box"></p>
                 <p id="test_send_btn"></p>
             </div>
+                
                 </div>
     );
     }
