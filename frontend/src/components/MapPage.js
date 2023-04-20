@@ -1103,7 +1103,7 @@ export default class MapPage extends Component {
             if(!heartbeatBleEnabled) {
                 return;
             }
-            if(heartbeatBleCounter >= 2) {
+            if(heartbeatBleCounter >= 15) {
                 console.log("heartbeat failure!");
                 handleBleConnectionStateChange("Disconnected");
             } else {
@@ -1395,31 +1395,31 @@ export default class MapPage extends Component {
         
         document.getElementById('id_navbar').addEventListener('click', function () {
             var navbar = document.getElementById('id_navbar');
-            console.log('Click! Navbar' + navbar);
-            console.log('Click! Navbar' + this.children);
+//            console.log('Click! Navbar' + navbar);
+//            console.log('Click! Navbar' + this.children);
 //            $(".nav").find(".active").removeClass("active");
 //            $(this).addClass("active");
             
             
         })
         document.getElementById('id_nav_zone').addEventListener('click', function () {
-            console.log('Click zone! ');
+//            console.log('Click zone! ');
             setFormCurrent( formZone );
             document.getElementById('map').hidden = false;
         })
         
         document.getElementById('id_nav_internet').addEventListener('click', function () {
-            console.log('Click internet');
+//            console.log('Click internet');
             setFormCurrent( formInternet );
         })
         
         document.getElementById('id_nav_debug').addEventListener('click', function () {
-            console.log('Click internet');
+//            console.log('Click internet');
             setFormCurrent( formDebug );
         })
         
         document.getElementById('id_nav_apps').addEventListener('click', function () {
-            console.log('Click Apps');
+//            console.log('Click Apps');
             setFormCurrent( formApps );
         })
     }
@@ -1532,31 +1532,52 @@ export default class MapPage extends Component {
                 
                 
                 
-                <form id="id_form_internet">
+                
+                <div className="container" id="id_form_internet">
                     <h4>Wifi:</h4>
                     <input type="label" placeholder="Current Wifi" id="id_wifi" className="form_section" />
                 
-                    <div className="row">
-                        <div>
-                        <div className="column">
-                            <input type="button" value="Read Config" id="id_btn_read_wifi" className="form_section"/>
+                <div className="row">
+                  <div className="col-sm-6">
+                <div className="card text-center border-dark mb-3" style={{"maxWidth": "23rem"}}>
+                <div className="card-header">
+                    Current
+                  </div>
+                <div className="card-body">
+
+                <input type="button" value="Refresh" id="id_btn_read_wifi" className="form_section" style={{"maxWidth": "50%"}}/>
+                <br/>
                             <select id="id_select_wifi_aps" className="form_section">
                             </select>
-                            <input type="button" value="Delete" id="id_btn_del_wifi" className="form_section"/>
-                        </div>
-                        </div>
+                <br/>
+                <input type="button" value="Delete" id="id_btn_del_wifi" className="form_section" style={{"maxWidth": "50%"}}/>
+                </div>
+                </div>
                 
-                        <div>
-                        <div className="column">
-                            <input type="button" value="Scan Wifi" id="id_btn_wifi_scan" className="form_section"/>
+                </div>
+                
+                
+                <div class="col-sm-6">
+                <div className="card text-center border-dark mb-3" style={{"maxWidth": "23rem"}}>
+                
+                <div className="card-header">
+                    Scan/Add WiFi
+                  </div>
+                <div className="card-body">
+                <input type="button" value="Scan Wifi" id="id_btn_wifi_scan" className="form_section" style={{"maxWidth": "50%"}}/>
+                <br/>
                             <select id="id_select_wifi_scan_aps" className="form_section">
                             </select>
+                <br/>
                             <input type="password" placeholder="Passkey" id="id_wifi_psk" className="form_section" />
-                            <input type="button" value="Add" id="id_btn_add_wifi" className="form_section"/>
-                        </div>
-                        </div>
+                <br/>
+                <input type="button" value="Add" id="id_btn_add_wifi" className="form_section" style={{"maxWidth": "50%"}}/>
+                </div>
+                </div>
                 
-                    <div>
+                </div>
+                </div>
+                
                         <div className="table" id="id_iface_table">
                 <table>
                 <thead>
@@ -1570,11 +1591,10 @@ export default class MapPage extends Component {
                 </tbody>
                 </table>
                         </div>
-                    </div>
-                    </div>
+               
                 
 
-                </form>
+                </div>
                 
                 
                 <form id="id_form_debug">
