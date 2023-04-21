@@ -31,6 +31,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
+import Spinner from 'react-bootstrap/Spinner';
 //import Navbar from "./../Navigation/Navbar.js";
 
 //import './../index.css';
@@ -815,6 +816,7 @@ export default class MapPage extends Component {
             let utf8decoder = new TextDecoder();
             
             var message = utf8decoder.decode(value);
+            
             //                document.getElementById('id_status').value = utf8decoder.decode(value);
             setStatus("Pi says: " + message);
             
@@ -960,6 +962,7 @@ export default class MapPage extends Component {
         }
         
         function importWifiScan(contents) {
+            document.getElementById('id_spinner_wifi_scan').hidden = true;
             document.getElementById('id_select_wifi_scan_aps').options.length = 0;
             contents['scan_result'].forEach(ap => {
                 document.getElementById('id_select_wifi_scan_aps').append(new Option(ap, ap));
@@ -1044,15 +1047,20 @@ export default class MapPage extends Component {
             var connectionLabel = document.getElementById('id_label_status');
             connectionLabel.value = state;
             
+            var spinner = document.getElementById('id_spinner_ble');
+            
             if(state.localeCompare("Connected") == 0 ) {
                 connectionLabel.style.backgroundColor = "cyan";
                 shouldEnableBleRequiredUi(true);
+                spinner.hidden = true;
             } else if (state.localeCompare("Disconnected") == 0 ) {
                 connectionLabel.style.backgroundColor = "red";
                 shouldEnableBleRequiredUi(false);
+                spinner.hidden = true;
             } else {
                 connectionLabel.style.backgroundColor = "orange";
                 shouldEnableBleRequiredUi(false);
+                spinner.hidden = false;
             }
             // check state then disable/enable various ui elements here:
         }
@@ -1207,6 +1215,7 @@ export default class MapPage extends Component {
         })
         document.getElementById('id_btn_wifi_scan').addEventListener('click', function () {
             sendCirclesCommand("S");
+            document.getElementById('id_spinner_wifi_scan').hidden = false;
         })
         document.getElementById('id_btn_app_read').addEventListener('click', function () {
             sendCirclesCommand("A");
@@ -1434,7 +1443,7 @@ export default class MapPage extends Component {
                 <div className="container">
                 
                 
-                <Navbar variant="dark" bg="dark" id="id_navbar">
+                <Navbar variant="light" bg="light" id="id_navbar">
                 <Container fluid>
                   <Navbar.Brand href="#">
                     <img
@@ -1444,7 +1453,7 @@ export default class MapPage extends Component {
                               height="30"
                               className="d-inline-block align-top"
                             />{' '}
-                    CIRCLES
+                    CIRCLES Pi Setup
                     </Navbar.Brand>
                   <button
                     className="navbar-toggler"
@@ -1471,22 +1480,15 @@ export default class MapPage extends Component {
                     <li className="nav-item">
                         <a className="nav-link" id="id_nav_debug" href="#">Debug</a>
                     </li>
-                      <li className="nav-item dropdown">
-                        <a className="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Dropdown
-                        </a>
-                        <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                          <a className="dropdown-item" href="#">Action</a>
-                          <a className="dropdown-item" href="#">Another action</a>
-                          <div className="dropdown-divider"></div>
-                          <a className="dropdown-item" href="#">Something else here</a>
-                        </div>
-                      </li>
+                      
                     </ul>
                   </div>
                 
                 <Form className="d-flex">
-                <Navbar.Text>Bluetooth Status:</Navbar.Text>
+                <Navbar.Collapse className="justify-content-end">
+                
+                <Navbar.Text>Bluetooth:</Navbar.Text>
+                </Navbar.Collapse>
                             <Form.Control
                               type="text bg-red"
                               id="id_label_status"
@@ -1494,8 +1496,10 @@ export default class MapPage extends Component {
                               className="me-2"
                               aria-label="Search"
                             />
+                <Spinner animation="border" variant="primary" id="id_spinner_ble"/>
                             <Button variant="primary" id="id_btn_connect_ble">Connect</Button>
                           </Form>
+                
                 </Container>
                 </Navbar>
                 
@@ -1544,24 +1548,30 @@ export default class MapPage extends Component {
                 
                 
                 
-                <div className="container" id="id_form_internet">
+                <Form id="id_form_internet">
                     <h4>Wifi:</h4>
                 
                 <div className="row">
                   <div className="col-sm-6">
-                <div className="card text-center border-dark mb-3" style={{"maxWidth": "23rem"}}>
+                <div className="card text-left border-dark mb-3" style={{"maxWidth": "23rem"}}>
                 <div className="card-header">
                     Current
                   </div>
                 <div className="card-body">
-                <input type="label" placeholder="Current Wifi" id="id_wifi" className="form_section" />
-
-                <input type="button" value="Refresh" id="id_btn_read_wifi" className="form_section" style={{"maxWidth": "50%"}}/>
+                <Form.Label>Current Connected WiFi:</Form.Label>
                 <br/>
-                            <select id="id_select_wifi_aps" className="form_section">
-                            </select>
+                <Form.Control id="id_wifi" placeholder="Perform Refresh"/>
                 <br/>
-                <input type="button" value="Delete" id="id_btn_del_wifi" className="form_section" style={{"maxWidth": "50%"}}/>
+                <Button variant="primary" type="submit" id="id_btn_read_wifi">Refresh</Button>
+                <br/>
+                
+                <Form.Label>Currently Configured WiFi Access Points:</Form.Label>
+                <br/>
+                
+                <Form.Select id="id_select_wifi_aps" >
+                </Form.Select>
+                <br/>
+                <Button variant="primary" type="submit" id="id_btn_del_wifi">Delete</Button>
                 </div>
                 </div>
                 
@@ -1569,20 +1579,25 @@ export default class MapPage extends Component {
                 
                 
                 <div className="col-sm-6">
-                <div className="card text-center border-dark mb-3" style={{"maxWidth": "23rem"}}>
+                <div className="card text-left border-dark mb-3" style={{"maxWidth": "23rem"}}>
                 
                 <div className="card-header">
                     Scan/Add WiFi
                   </div>
                 <div className="card-body">
-                <input type="button" value="Scan Wifi" id="id_btn_wifi_scan" className="form_section" style={{"maxWidth": "50%"}}/>
+                <Form.Label>Scanned WiFi Access Points:</Form.Label>
                 <br/>
-                            <select id="id_select_wifi_scan_aps" className="form_section">
-                            </select>
+                <Form.Select id="id_select_wifi_scan_aps" >
+                    <option>Perform WiFi Scan</option>
+                </Form.Select>
                 <br/>
-                            <input type="password" placeholder="Passkey" id="id_wifi_psk" className="form_section" />
+                <Button variant="primary" type="submit" id="id_btn_wifi_scan">Scan Wifi</Button>
+                <Spinner animation="border" id="id_spinner_wifi_scan" hidden="true"/>
                 <br/>
-                <input type="button" value="Add" id="id_btn_add_wifi" className="form_section" style={{"maxWidth": "50%"}}/>
+                <Form.Label>WiFi Password:</Form.Label>
+                <Form.Control type="password" placeholder="Password" id="id_wifi_psk" />
+                <br/>
+                <Button variant="primary" type="submit" id="id_btn_add_wifi">Add</Button>
                 </div>
                 </div>
                 
@@ -1605,7 +1620,7 @@ export default class MapPage extends Component {
                
                 
 
-                </div>
+                </Form>
                 
                 
                 <form id="id_form_debug">
