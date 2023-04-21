@@ -593,30 +593,7 @@ export default class MapPage extends Component {
 //        document.addEventListener('id_btn_connect_ble', function(event) {
         document.getElementById('id_btn_connect_ble').addEventListener('click', function () {
             console.log("Blue daba dee");
-            
-            
-//            navigator.bluetooth.getAvailability().then((available) => {
-//              if (available) {
-//                console.log("This device supports Bluetooth!");
-//              } else {
-//                console.log("Doh! Bluetooth is not supported");
-//              }
-//            });
-            
-           // let optionalServices = document.getElementById('optionalServices').value
-            //    .split(/, ?/).map(s => s.startsWith('0x') ? parseInt(s) : s)
-             //   .filter(s => s && BluetoothUUID.getService);
-            
-//            const options = {
-//                //filters: [ { name: "1J8GX58S03C507022" } ],
-////            filters: [
-//////                        {services: ["00000001-710e-4a5b-8d75-3e5b444bc3cf"] }
-////                      //{namePrefix: "Temperature" }
-////                        {namePrefix: "T" }
-////                      ],
-//              acceptAllDevices : true,
-//              optionalServices: ['00000001-710e-4a5b-8d75-3e5b444b3c3f'] // Required to access service later.
-//            };
+ 
             
             let options = {};
             
