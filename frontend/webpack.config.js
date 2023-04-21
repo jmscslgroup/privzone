@@ -23,6 +23,18 @@ module.exports = {
           loader: "babel-loader",
         },
       },
+      {
+        test: /\.(png|svg|jpe?g|gif)$/,
+      use: [
+        {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+            outputPath: 'assets/images/'
+          }
+        }
+            ]
+      },
     ],
   },
   optimization: {

@@ -24,9 +24,13 @@ import {
 } from 'ol/style.js';
 
 
-
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.js";
+
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Navbar from 'react-bootstrap/Navbar';
+import Container from 'react-bootstrap/Container';
 //import Navbar from "./../Navigation/Navbar.js";
 
 //import './../index.css';
@@ -586,8 +590,8 @@ export default class MapPage extends Component {
         var myConfigCharacteristic;
         var hereToThePiCharacteristic;
         // check for bluetooth stuff
-//        document.addEventListener('blue_btn', function(event) {
-        document.getElementById('blue_btn').addEventListener('click', function () {
+//        document.addEventListener('id_btn_connect_ble', function(event) {
+        document.getElementById('id_btn_connect_ble').addEventListener('click', function () {
             console.log("Blue daba dee");
             
             
@@ -1387,6 +1391,7 @@ export default class MapPage extends Component {
         
         function setFormCurrent( formElement ) {
             document.getElementById('map').hidden = true;
+            document.getElementById('id_container_zone').hidden = true;
             formElements.forEach( function (element) {
                     element.hidden = true;
             });
@@ -1406,6 +1411,7 @@ export default class MapPage extends Component {
 //            console.log('Click zone! ');
             setFormCurrent( formZone );
             document.getElementById('map').hidden = false;
+            document.getElementById('id_container_zone').hidden = false;
         })
         
         document.getElementById('id_nav_internet').addEventListener('click', function () {
@@ -1446,12 +1452,21 @@ export default class MapPage extends Component {
                 
                 
             
-        <div className="container">
+                <div className="container">
                 
                 
-                
-                <nav className="navbar navbar-expand-lg navbar-dark bg-dark" id="id_navbar">
-                  <a className="navbar-brand" href="#">Privzone</a>
+                <Navbar variant="dark" bg="dark" id="id_navbar">
+                <Container fluid>
+                  <Navbar.Brand href="#">
+                    <img
+                              alt=""
+                              src="./logo.png"
+                              width="30"
+                              height="30"
+                              className="d-inline-block align-top"
+                            />{' '}
+                    CIRCLES
+                    </Navbar.Brand>
                   <button
                     className="navbar-toggler"
                     type="button"
@@ -1490,11 +1505,28 @@ export default class MapPage extends Component {
                       </li>
                     </ul>
                   </div>
-                </nav>
+                
+                <Form className="d-flex">
+                <Navbar.Text>Bluetooth Status:</Navbar.Text>
+                            <Form.Control
+                              type="text bg-red"
+                              id="id_label_status"
+                              placeholder="Disconnected"
+                              className="me-2"
+                              aria-label="Search"
+                            />
+                            <Button variant="primary" id="id_btn_connect_ble">Connect</Button>
+                          </Form>
+                </Container>
+                </Navbar>
                 
                 
-            <div className="map" id="map"></div>
                 
+                
+                
+                
+                
+                <div className="container" id="id_container_view">
                 
                 
             <form id="id_form_apps">
@@ -1535,7 +1567,6 @@ export default class MapPage extends Component {
                 
                 <div className="container" id="id_form_internet">
                     <h4>Wifi:</h4>
-                    <input type="label" placeholder="Current Wifi" id="id_wifi" className="form_section" />
                 
                 <div className="row">
                   <div className="col-sm-6">
@@ -1544,6 +1575,7 @@ export default class MapPage extends Component {
                     Current
                   </div>
                 <div className="card-body">
+                <input type="label" placeholder="Current Wifi" id="id_wifi" className="form_section" />
 
                 <input type="button" value="Refresh" id="id_btn_read_wifi" className="form_section" style={{"maxWidth": "50%"}}/>
                 <br/>
@@ -1557,7 +1589,7 @@ export default class MapPage extends Component {
                 </div>
                 
                 
-                <div class="col-sm-6">
+                <div className="col-sm-6">
                 <div className="card text-center border-dark mb-3" style={{"maxWidth": "23rem"}}>
                 
                 <div className="card-header">
@@ -1598,6 +1630,9 @@ export default class MapPage extends Component {
                 
                 
                 <form id="id_form_debug">
+                <h4>Bluetooth Status:</h4>
+                    <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
+                <br/>
                 <input type="button" value="Fake Poly" id="fake_btn" className="form_section"/>
                 <input type="id_input" placeholder="Parsed" id="id_parse" className="form_section" />
                 <h4>Pi Temperature:</h4>
@@ -1608,21 +1643,15 @@ export default class MapPage extends Component {
                 
                 </form>
                 
+                <div className="container" id="id_container_zone">
+            <div className="map" id="map"></div>
             <div className="sidebar">
 
                 
                 
                 
                 
-                <form id="id_form_bluetooth">
                 
-                <h4>Bluetooth Status:</h4>
-                <input type="text bg-red" id="id_label_status" />
-                    <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
-                
-                
-                    <input type="button" value="Connect" id="blue_btn" className="form_section"/>
-                </form>
                 
                 <form id="id_form_zone">
                     <select id="id_shape" className="form_section">
@@ -1659,7 +1688,9 @@ export default class MapPage extends Component {
                 <p id="coord-text-box"></p>
                 <p id="test_send_btn"></p>
             </div>
+                </div>
                 
+                </div>
                 </div>
     );
     }
