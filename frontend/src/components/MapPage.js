@@ -37,6 +37,8 @@ import Container from 'react-bootstrap/Container';
 import './../styles.css';
 
 import Grid from '@mui/material/Grid';
+
+import logo from './../logo.png'
 //import Item from '@mui/material/Item';
 
 //class CustomButton extends React.Component {
@@ -1437,7 +1439,7 @@ export default class MapPage extends Component {
                   <Navbar.Brand href="#">
                     <img
                               alt=""
-                              src="./logo.png"
+                            src={logo}
                               width="30"
                               height="30"
                               className="d-inline-block align-top"
