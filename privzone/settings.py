@@ -55,8 +55,8 @@ else:
         }
     }
 
-ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "localhost"]
-
+#ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_extensions",
     "frontend.apps.FrontendConfig",
+    "sslserver"
 ]
 
 MIDDLEWARE = [

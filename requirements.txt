@@ -4,6 +4,7 @@ django-environ
 django-extensions
 Werkzeug
 pyOpenSSL
+django-sslserver
 psycopg2-binary
 bootstrap
 react-bootstrap
