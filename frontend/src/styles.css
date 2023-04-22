@@ -16,34 +16,22 @@ body {
 /* https://codepen.io/andornagy/pen/gaGBZz */
 
 table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
-    
 }
 
 table {
     
-    margin: 0 auto;
 }
 
 th {
-    background: #3498db;
-    color: white;
-    font-weight: bold;
     text-align: center;
 }
 
 td, th {
-    padding: 10px;
-    font-size: 18px;
 }
     
 td {
     text-align: left;
     
 }
-    
-tr:nth-child(even) {
-    background-color: #D6EEEE;
-}
+
 

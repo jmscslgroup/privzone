@@ -27,11 +27,14 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.js";
 
+import Card from 'react-bootstrap/Card';
+import CardGroup from 'react-bootstrap/CardGroup';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Spinner from 'react-bootstrap/Spinner';
+import Table from 'react-bootstrap/Table';
 //import Navbar from "./../Navigation/Navbar.js";
 
 //import './../index.css';
@@ -168,7 +171,7 @@ export default class MapPage extends Component {
             view.setResolution(2.388657133911758);
         });
 
-        var typeSelect = document.getElementById('id_shape');
+        var typeSelect = document.getElementById('id_select_shape');
 
         
         // See: https://openlayers.org/en/latest/examples/draw-and-modify-geodesic.html
@@ -223,7 +226,7 @@ export default class MapPage extends Component {
 //            }
         });
 
-        document.getElementById('id_input').addEventListener('change', function () {
+        document.getElementById('id_field_vin').addEventListener('change', function () {
 //            var dat = get_regions();
 //            if (dat.length > 0 && get_vin().length == 17) {
 //                document.getElementById('send_btn').disabled = false;
@@ -255,17 +258,17 @@ export default class MapPage extends Component {
             node.innerText = "";
             node = document.getElementById('coord-text-box');
             node.innerText = "";
-            document.getElementById('id_input').value = "";
-            document.getElementById('id_offset').value = "";
+            document.getElementById('id_field_vin').value = "";
+            document.getElementById('id_field_offset').value = "";
         };
 
         function get_vin() {
-            var elm = document.getElementById('id_input');
+            var elm = document.getElementById('id_field_vin');
             return elm.value;
         }
         
         function get_offset() {
-            var elm = document.getElementById('id_offset');
+            var elm = document.getElementById('id_field_offset');
             return elm.value;
         }
         
@@ -318,7 +321,7 @@ export default class MapPage extends Component {
         }
 
         // reset button
-        document.getElementById('reset_btn').addEventListener('click', function () {
+        document.getElementById('id_btn_reset_zone').addEventListener('click', function () {
             reset();
         });
         
@@ -382,55 +385,7 @@ export default class MapPage extends Component {
                 }
             });
         });
-        
-        // fake it button
-        document.getElementById('fake_btn').addEventListener('click', function () {
-//            var type = "Polygon";
-//            let geometryFunction = function (coordinates, geometry) {
-//                console.log("iefhoiadfh");
-//                const newCoordinates = [];
-//                newCoordinates.push([0,0]);
-//                newCoordinates.push([50,0]);
-//                newCoordinates.push([50,50]);
-//                newCoordinates.push([0,50]);
-//                newCoordinates.push(newCoordinates[0].slice());
-//                if (!geometry) {
-//                    geometry = new Polygon([newCoordinates]);
-//                } else {
-//                    geometry.setCoordinates([newCoordinates]);
-//                }
-//                return geometry;
-//            }
-//            draw = new Draw({
-//                source: source, // where the drawing occurs
-//                type: "Polygon",
-//                geometryFunction: geometryFunction,
-//            });
-//            map.addInteraction(draw); // create new drawing on mouse
-//            //map.addInteraction();
-            
-            
-            const newCoordinates = [];
-            newCoordinates.push(fromLonLat([0, 0]));
-            newCoordinates.push(fromLonLat([45, 0]));
-            newCoordinates.push(fromLonLat([45, 45]));
-            newCoordinates.push(fromLonLat([0, 45]));
-            newCoordinates.push(fromLonLat([0, 0]));
-            //newCoordinates.push(newCoordinates[0].slice());
-            
-            var polyone = new Polygon([newCoordinates]);
-            var featureone = new Feature(polyone);
-            
-//            featureone.setStyle(new Style({
-//                fill: new Fill({
-//                  color: hysteresisColor
-//                })
-//              }))
-            
-            source.addFeature(featureone);
-//            console.log("iefhoiadfh");
-            //source.addPolygon(newCoordinates);
-        });
+
         
         function importZoneFile(json) {
             reset();    // Not very great to have it here, but prevents doulbe importing
@@ -453,8 +408,8 @@ export default class MapPage extends Component {
                 view.setCenter(result['view']['center']);
             }
               
-              document.getElementById('id_input').value = result['vin'];
-              document.getElementById('id_offset').value = result['offset'];
+              document.getElementById('id_field_vin').value = result['vin'];
+              document.getElementById('id_field_offset').value = result['offset'];
         }
         
         function importCsv(csv) {
@@ -506,7 +461,7 @@ export default class MapPage extends Component {
                     //                  }
                     //
                     //                  document.getElementById('id_input').value = result['vin'];
-                    //                  document.getElementById('id_offset').value = result['offset'];
+                    //                  document.getElementById('id_field_offset').value = result['offset'];
                 }
               } else if(files[0].name.indexOf('.csv') > -1) {
                   
@@ -916,7 +871,7 @@ export default class MapPage extends Component {
             
             var myTable = document.getElementById('id_iface_table');
 //            var tableRows = myTable.getElementsByTagName('tr');
-            var myTableBody = myTable.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0];
+            var myTableBody = myTable.getElementsByTagName('tbody')[0];
 //            var tableRows = mmyTableBody.getElementsByTagName('tr');
 //            var rowCount = tableRows.length;
 //            for( var i = rowCount-1; i > 0; i--) {
@@ -975,7 +930,7 @@ export default class MapPage extends Component {
         
         function clearTable(table) {
             var myTable = document.getElementById(table);
-            var myTableBody = myTable.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0];
+            var myTableBody = myTable.getElementsByTagName('tbody')[0];
             var tableRows = myTableBody.getElementsByTagName('tr');
 //            var tableRows = myTable.getElementsByTagName('tr');
             var rowCount = tableRows.length;
@@ -993,7 +948,7 @@ export default class MapPage extends Component {
             
             clearTable('id_table_apps');
             var myTable = document.getElementById('id_table_apps');
-            var myTableBody = myTable.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0];
+            var myTableBody = myTable.getElementsByTagName('tbody')[0];
             
             for( const i in contents ) {
                 let appInfo = contents[i];
@@ -1440,7 +1395,7 @@ export default class MapPage extends Component {
                 
                 
             
-                <div className="container">
+                <Container>
                 
                 
                 <Navbar variant="light" bg="light" id="id_navbar">
@@ -1509,17 +1464,18 @@ export default class MapPage extends Component {
                 
                 
                 
-                <div className="container" id="id_container_view">
                 
                 
-            <form id="id_form_apps">
+                
+            <Form id="id_form_apps">
                 
                 
                 
                     <h4>Apps:</h4>
-                <div>
-                    <div className="app-table" id="id_table_apps">
-                <table>
+                
+                <Button variant="primary" id="id_btn_app_read" >Refresh Apps</Button>
+                
+                <Table striped bordered hover id="id_table_apps">
                 <thead>
                 <tr>
                   <th>Name</th>
@@ -1532,18 +1488,16 @@ export default class MapPage extends Component {
                 <tbody>
                 <tr/>
                 </tbody>
-                </table>
-                </div>
-                </div>
+                </Table>
+                
                 
                 <select id="id_app_select" className="form_section" />
-                <input type="button" value="Enable App" id="id_btn_app_enable" className="form_section"/>
-                <input type="button" value="Refresh Apps" id="id_btn_app_read" className="form_section"/>
-                <input type="button" value="Fake it" id="id_app_fake" className="form_section"/>
-                <input type="button" value="Restart" id="id_btn_app_restart" className="form_section"/>
-                <input type="button" value="Stop" id="id_btn_app_stop" className="form_section"/>
+                <Button variant="primary" id="id_btn_app_enable">Enable App</Button>
+                <Button variant="primary" id="id_app_fake" hidden={true}>Fake it</Button>
+                <Button variant="primary" id="id_btn_app_restart">Restart</Button>
+                <Button variant="primary" id="id_btn_app_stop">Stop</Button>
                 
-            </form>
+            </Form>
                 
                 
                 
@@ -1551,40 +1505,50 @@ export default class MapPage extends Component {
                 <Form id="id_form_internet">
                     <h4>Wifi:</h4>
                 
-                <div className="row">
-                  <div className="col-sm-6">
-                <div className="card text-left border-dark mb-3" style={{"maxWidth": "23rem"}}>
-                <div className="card-header">
+                <CardGroup>
+                <Card>
+                <Card.Header>
                     Current
-                  </div>
-                <div className="card-body">
+                </Card.Header>
+                <Card.Body>
                 <Form.Label>Current Connected WiFi:</Form.Label>
-                <br/>
                 <Form.Control id="id_wifi" placeholder="Perform Refresh"/>
                 <br/>
                 <Button variant="primary" type="submit" id="id_btn_read_wifi">Refresh</Button>
                 <br/>
                 
                 <Form.Label>Currently Configured WiFi Access Points:</Form.Label>
-                <br/>
                 
                 <Form.Select id="id_select_wifi_aps" >
                 </Form.Select>
                 <br/>
                 <Button variant="primary" type="submit" id="id_btn_del_wifi">Delete</Button>
-                </div>
-                </div>
                 
-                </div>
+                <br/>
                 
                 
-                <div className="col-sm-6">
-                <div className="card text-left border-dark mb-3" style={{"maxWidth": "23rem"}}>
+                <Form.Label>Pi Interface Information:</Form.Label>
+                <br/>
+                <Table striped bordered hover size="sm" id="id_iface_table">
+                    <thead>
+                        <tr>
+                            <th>Interface</th>
+                            <th>IP</th>
+                        </tr>
+                        </thead>
+                    <tbody>
+                        <tr />
+                    </tbody>
+                </Table>
+                </Card.Body>
+                </Card>
                 
-                <div className="card-header">
+                <Card>
+                
+                <Card.Header>
                     Scan/Add WiFi
-                  </div>
-                <div className="card-body">
+                </Card.Header>
+                <Card.Body>
                 <Form.Label>Scanned WiFi Access Points:</Form.Label>
                 <br/>
                 <Form.Select id="id_select_wifi_scan_aps" >
@@ -1592,42 +1556,28 @@ export default class MapPage extends Component {
                 </Form.Select>
                 <br/>
                 <Button variant="primary" type="submit" id="id_btn_wifi_scan">Scan Wifi</Button>
-                <Spinner animation="border" id="id_spinner_wifi_scan" hidden="true"/>
+                <Spinner animation="border" id="id_spinner_wifi_scan" hidden={true}/>
                 <br/>
                 <Form.Label>WiFi Password:</Form.Label>
                 <Form.Control type="password" placeholder="Password" id="id_wifi_psk" />
                 <br/>
                 <Button variant="primary" type="submit" id="id_btn_add_wifi">Add</Button>
-                </div>
-                </div>
+                </Card.Body>
+                </Card>
                 
-                </div>
-                </div>
+                </CardGroup>
                 
-                        <div className="table" id="id_iface_table">
-                <table>
-                <thead>
-                <tr>
-                  <th>iface</th>
-                  <th>IP</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr />
-                </tbody>
-                </table>
-                        </div>
+                
                
                 
 
                 </Form>
                 
                 
-                <form id="id_form_debug">
+                <Form id="id_form_debug">
                 <h4>Bluetooth Status:</h4>
                     <input type="id_input" placeholder="BLE Status" id="id_status" className="form_section" />
                 <br/>
-                <input type="button" value="Fake Poly" id="fake_btn" className="form_section"/>
                 <input type="id_input" placeholder="Parsed" id="id_parse" className="form_section" />
                 <h4>Pi Temperature:</h4>
                     <input type="id_input" placeholder="CPU Temp" id="id_cpu" className="form_section" />
@@ -1635,9 +1585,9 @@ export default class MapPage extends Component {
                     <input type="button" value="Set F" id="f_btn" className="form_section"/>
 
                 
-                </form>
+                </Form>
                 
-                <div className="container" id="id_container_zone">
+                <Container id="id_container_zone">
             <div className="map" id="map"></div>
             <div className="sidebar">
 
@@ -1647,32 +1597,38 @@ export default class MapPage extends Component {
                 
                 
                 
-                <form id="id_form_zone">
-                    <select id="id_shape" className="form_section">
+                <Form id="id_form_zone">
+                <Form.Label>Zone Drawing Tools</Form.Label>
+                    <select id="id_select_shape" className="form_section">
                         <option value="Circle">Circle</option>
                         <option value="Polygon">Polygon</option>
-                        <option value="Geodesic">Geodesic</option>
                     </select>
-                    <input type="button" value="Reset" id="reset_btn" className="form_section" />
-                    <input type="id_input" placeholder="Offset in Meters" id="id_offset" className="form_section" />
-                    <input type="button" value="Email" id="send_btn" className="form_section"/>
+                    <Button variant="primary" id="id_btn_reset_zone">Reset</Button>
+                <Form.Control id="id_field_offset" placeholder="Offset in Meters" />
  
-                    <input type="id_input" placeholder="Enter VIN" maxLength="17" id="id_input" className="form_section" />
-                    <input type="file" id="selectedFile" />
-                    <input type="button" value="Import" id="import_btn" className="form_section"/>
                 
-                <h4>Zone File Transfer:</h4>
+    <Form.Label>Import Zonefiles/GPS files:</Form.Label>
+                    <Form.Control type="file" id="selectedFile"/>
+                    <Button variant="primary" id="import_btn">Import</Button>
+                
+                                
+                    <Form.Label>Send Zonefile Over Email</Form.Label>
+                <Form.Control id="id_field_vin" placeholder="Enter VIN" maxLength="17" />
+                    <Button variant="primary" id="send_btn">Email</Button>
+                
+                
+                    <Form.Label>Send Zonefile Over Bluetoth</Form.Label>
                     <div className="row">
                         <div className="column">
-                            <input type="button" value="Send Zone" id="id_btn_send_zone" className="form_section"/>
+                            <Button variant="primary" id="id_btn_send_zone">Send Zone</Button>
                         </div>
                         <div className="column">
-                            <input type="button" value="Read Zone" id="id_btn_read_zone" className="form_section"/>
-                            <input type="button" value="Read Processed" id="id_btn_read_zone_processed" className="form_section"/>
+                            <Button variant="primary" id="id_btn_read_zone">Read Zone</Button>
+                            <Button variant="primary" id="id_btn_read_zone_processed">Read Processed</Button>
                         </div>
                     </div>
                 
-                </form>
+                </Form>
                 
                
                 
@@ -1682,10 +1638,10 @@ export default class MapPage extends Component {
                 <p id="coord-text-box"></p>
                 <p id="test_send_btn"></p>
             </div>
-                </div>
+                </Container>
                 
-                </div>
-                </div>
+                
+                </Container>
     );
     }
 }
