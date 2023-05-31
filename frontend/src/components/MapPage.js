@@ -1338,8 +1338,12 @@ export default class MapPage extends Component {
             formElements.forEach( function (element) {
                     element.hidden = true;
             });
-            formElement.hidden = false;
+            if(formElement) {
+                formElement.hidden = false;
+            }
+            
         }
+        setFormCurrent(null);
         
         document.getElementById('id_navbar').addEventListener('click', function () {
             var navbar = document.getElementById('id_navbar');
@@ -1514,7 +1518,7 @@ export default class MapPage extends Component {
                 <Form.Label>Current Connected WiFi:</Form.Label>
                 <Form.Control id="id_wifi" placeholder="Perform Refresh"/>
                 <br/>
-                <Button variant="primary" type="submit" id="id_btn_read_wifi">Refresh</Button>
+                <Button variant="primary" id="id_btn_read_wifi">Refresh WiFi State</Button>
                 <br/>
                 
                 <Form.Label>Currently Configured WiFi Access Points:</Form.Label>
@@ -1522,7 +1526,7 @@ export default class MapPage extends Component {
                 <Form.Select id="id_select_wifi_aps" >
                 </Form.Select>
                 <br/>
-                <Button variant="primary" type="submit" id="id_btn_del_wifi">Delete</Button>
+                <Button variant="primary" id="id_btn_del_wifi">Forget Selected WiFi</Button>
                 
                 <br/>
                 
@@ -1555,13 +1559,13 @@ export default class MapPage extends Component {
                     <option>Perform WiFi Scan</option>
                 </Form.Select>
                 <br/>
-                <Button variant="primary" type="submit" id="id_btn_wifi_scan">Scan Wifi</Button>
+                <Button variant="primary" id="id_btn_wifi_scan">Scan Available Wifi</Button>
                 <Spinner animation="border" id="id_spinner_wifi_scan" hidden={true}/>
                 <br/>
                 <Form.Label>WiFi Password:</Form.Label>
                 <Form.Control type="password" placeholder="Password" id="id_wifi_psk" />
                 <br/>
-                <Button variant="primary" type="submit" id="id_btn_add_wifi">Add</Button>
+                <Button variant="primary" id="id_btn_add_wifi">Add WiFi With Password</Button>
                 </Card.Body>
                 </Card>
                 
