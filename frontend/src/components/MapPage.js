@@ -852,6 +852,7 @@ export default class MapPage extends Component {
         function importWifi(contents) {
             console.log("Wifi contents: " + JSON.stringify(contents) )
             
+            document.getElementById('id_spinner_wifi_add').hidden = true;   // HACK: this should have its own status response...
             
             let ifaces = {}
             contents['interfaces'].forEach( iface => {
@@ -1012,6 +1013,8 @@ export default class MapPage extends Component {
                 connectionLabel.style.backgroundColor = "red";
                 shouldEnableBleRequiredUi(false);
                 spinner.hidden = true;
+                document.getElementById('id_spinner_wifi_scan').hidden = true;
+                document.getElementById('id_spinner_wifi_add').hidden = true;
             } else {
                 connectionLabel.style.backgroundColor = "orange";
                 shouldEnableBleRequiredUi(false);
@@ -1049,7 +1052,7 @@ export default class MapPage extends Component {
             if(!heartbeatBleEnabled) {
                 return;
             }
-            if(heartbeatBleCounter >= 15) {
+            if(heartbeatBleCounter >= 20) {
                 console.log("heartbeat failure!");
                 handleBleConnectionStateChange("Disconnected");
             } else {
@@ -1199,6 +1202,9 @@ export default class MapPage extends Component {
         })
         document.getElementById('id_btn_add_wifi').addEventListener('click', function () {
             console.log('Configuring wifi AP: ' + document.getElementById('id_select_wifi_scan_aps').value);
+            
+            
+            document.getElementById('id_spinner_wifi_add').hidden = false;
             
             document.getElementById('id_wifi_psk').value;
             
@@ -1566,6 +1572,7 @@ export default class MapPage extends Component {
                 <Form.Control type="password" placeholder="Password" id="id_wifi_psk" />
                 <br/>
                 <Button variant="primary" id="id_btn_add_wifi">Add WiFi With Password</Button>
+                <Spinner animation="border" id="id_spinner_wifi_add" hidden={true}/>
                 </Card.Body>
                 </Card>
                 
