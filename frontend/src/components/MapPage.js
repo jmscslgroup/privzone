@@ -977,6 +977,16 @@ export default class MapPage extends Component {
                 rowNode.appendChild(cellNode);
                 
                 cellNode = document.createElement("td");
+                textNode = document.createTextNode(appInfo['repository']);
+                cellNode.appendChild(textNode);
+                rowNode.appendChild(cellNode);
+                
+                cellNode = document.createElement("td");
+                textNode = document.createTextNode(appInfo['branch']);
+                cellNode.appendChild(textNode);
+                rowNode.appendChild(cellNode);
+                
+                cellNode = document.createElement("td");
                 textNode = document.createTextNode(appInfo['description']);
                 cellNode.appendChild(textNode);
                 rowNode.appendChild(cellNode);
@@ -1036,6 +1046,8 @@ export default class MapPage extends Component {
                            'id_btn_app_read',
                            'id_btn_app_restart',
                            'id_btn_app_stop',
+                           'id_btn_app_repo_add',
+                           'id_btn_app_repo_remove',
                            'id_btn_wifi_scan'
             ];
             bleElements.forEach( element => {
@@ -1184,6 +1196,43 @@ export default class MapPage extends Component {
         document.getElementById('id_btn_app_stop').addEventListener('click', function () {
             sendCirclesCommand("As");
         })
+        document.getElementById('id_btn_app_repo_add').addEventListener('click', function () {
+            console.log('Adding App Repo: ' + document.getElementById('id_field_app_repo').value);
+            console.log('Adding App Branch: ' + document.getElementById('id_field_app_branch').value);
+            
+            
+//            document.getElementById('id_wifi_psk').value;
+            
+            var contents = JSON.stringify({
+                repository: document.getElementById('id_field_app_repo').value,
+                branch: document.getElementById('id_field_app_branch').value
+            })
+            
+            var data = {
+                type: 'app_add_repository',
+                contents: contents,
+                length: contents.length
+            }
+            
+            sendJsonDataToPi(JSON.stringify(data));
+            
+        })
+        document.getElementById('id_btn_app_repo_remove').addEventListener('click', function () {
+            console.log('Removing App Repo: ' + document.getElementById('id_field_app_repo').value);
+            
+            var contents = JSON.stringify({
+                repository: document.getElementById('id_field_app_repo').value
+            })
+            
+            var data = {
+                type: 'app_remove_repository',
+                contents: contents,
+                length: contents.length
+            }
+            
+            sendJsonDataToPi(JSON.stringify(data));
+        })
+        
         document.getElementById('id_app_fake').addEventListener('click', function () {
             var contents = [{
                 app: "pandarecord",
@@ -1492,6 +1541,8 @@ export default class MapPage extends Component {
                   <th>Service</th>
                   <th>Enabled</th>
                   <th>Running</th>
+                  <th>Repo</th>
+                  <th>Branch</th>
                   <th>Description</th>
                 </tr>
                 </thead>
@@ -1506,6 +1557,19 @@ export default class MapPage extends Component {
                 <Button variant="primary" id="id_app_fake" hidden={true}>Fake it</Button>
                 <Button variant="primary" id="id_btn_app_restart">Restart</Button>
                 <Button variant="primary" id="id_btn_app_stop">Stop</Button>
+                <br/>
+                <br/>
+                <br/>
+                
+                <Form.Label>Configure Libpanda App Repository:</Form.Label>
+                <br/>
+                Owner/Project: <Form.Control placeholder="jmscslgroup/libpanda-default-apps" id="id_field_app_repo" />
+                Branch: <Form.Control placeholder="main" id="id_field_app_branch" />
+                <br/>
+                <Button variant="primary" id="id_btn_app_repo_add">Add Repository</Button>
+                <Button variant="primary" id="id_btn_app_repo_remove">Remove Repository</Button>
+                <br/>
+                Repositories are pulled from Github.  For example, repository named "jmscslgroup/libpanda" is pulled from https://github.com/jmscslgroup/libpanda
                 
             </Form>
                 
