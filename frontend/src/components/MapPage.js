@@ -782,6 +782,12 @@ export default class MapPage extends Component {
             } else if(message.localeCompare("App command success!") == 0) {
                 console.log("Apps updated, invoking app refresh");
                 sendCirclesCommand("A");
+            } else if(message.localeCompare("Repository updated!") == 0) {
+                console.log("Repo Added, invoking app refresh");
+                sendCirclesCommand("A");
+            } else if(message.localeCompare("Repository removed!") == 0) {
+                console.log("Repo Removed, invoking app refresh");
+                sendCirclesCommand("A");
             }
             
         }
@@ -947,6 +953,10 @@ export default class MapPage extends Component {
             let appSelect = document.getElementById('id_app_select');
             appSelect.options.length = 0;
             
+            let appRepoSelect = document.getElementById('id_app_repo_select');
+            appRepoSelect.options.length = 0;
+            let installedRepositories = [];
+            
             clearTable('id_table_apps');
             var myTable = document.getElementById('id_table_apps');
             var myTableBody = myTable.getElementsByTagName('tbody')[0];
@@ -997,6 +1007,13 @@ export default class MapPage extends Component {
                 // Selection fo renabling:
                 
                 appSelect.append(new Option(appInfo['app'], appInfo['app']));
+                
+                // Now hanld eth e repositories:
+                if ( ! installedRepositories.includes(appInfo['repository']) ) {
+                    installedRepositories.push(appInfo['repository']);
+                    appRepoSelect.append(new Option(appInfo['repository'], appInfo['repository']));
+                    
+                }
             }
             appSelect.append(new Option("None", "None"));   // For disabling apps
         }
@@ -1218,10 +1235,11 @@ export default class MapPage extends Component {
             
         })
         document.getElementById('id_btn_app_repo_remove').addEventListener('click', function () {
-            console.log('Removing App Repo: ' + document.getElementById('id_field_app_repo').value);
+            let repoRoRemove = document.getElementById('id_app_repo_select').value;
+            console.log('Removing App Repo: ' + repoRoRemove);
             
             var contents = JSON.stringify({
-                repository: document.getElementById('id_field_app_repo').value
+                repository: repoRoRemove
             })
             
             var data = {
@@ -1567,9 +1585,15 @@ export default class MapPage extends Component {
                 Branch: <Form.Control placeholder="main" id="id_field_app_branch" />
                 <br/>
                 <Button variant="primary" id="id_btn_app_repo_add">Add Repository</Button>
-                <Button variant="primary" id="id_btn_app_repo_remove">Remove Repository</Button>
                 <br/>
                 Repositories are pulled from Github.  For example, repository named "jmscslgroup/libpanda" is pulled from https://github.com/jmscslgroup/libpanda
+                <br/>
+                <br/>
+                <Form.Label>Remove an App Repository:</Form.Label>
+                <br/>
+                <select id="id_app_repo_select" className="form_section" />
+                <Button variant="primary" id="id_btn_app_repo_remove">Remove Repository</Button>
+                <br/>
                 
             </Form>
                 
